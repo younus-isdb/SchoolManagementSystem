@@ -9,7 +9,6 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<SchoolDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//Update test
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
