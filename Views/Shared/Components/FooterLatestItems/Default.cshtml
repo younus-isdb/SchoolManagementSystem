@@ -1,0 +1,25 @@
+﻿@model IEnumerable<SchoolManagementSystem.Models.Student>
+
+<div class="footer-latest-items mt-3">
+    <h6 class="text-white">Latest Notice</h6>
+    <ul class="list-unstyled">
+
+        @foreach (var student in Model)
+        {
+            <li class="text-white-50 small d-flex align-items-center mb-2">
+
+                @if (student.ProfileImageUrl != null)
+                {
+                    <img src="@student.ProfileImageUrl"
+                         style="width:40px;height:40px;object-fit:cover;border-radius:4px;margin-right:10px;" />
+                }
+
+                <div>
+                    <strong>@student.StudentName</strong>
+                    (x @student.FatherName) — @student.EmergencyPhone
+                </div>
+            </li>
+        }
+
+    </ul>
+</div>

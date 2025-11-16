@@ -12,8 +12,8 @@ using SchoolManagementSystem.Models;
 namespace SchoolManagementSystem.Migrations
 {
     [DbContext(typeof(SchoolDbContext))]
-    [Migration("20251114141221_initialCreate")]
-    partial class initialCreate
+    [Migration("20251119124520_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -239,19 +239,18 @@ namespace SchoolManagementSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventId"));
 
-                    b.Property<string>("Audience")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int>("Audience")
+                        .HasColumnType("int");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(4000)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<DateTimeOffset?>("EndDateTime")
+                        .IsRequired()
                         .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsAllDay")
@@ -281,8 +280,6 @@ namespace SchoolManagementSystem.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("EventId");
-
-                    b.HasIndex("StartDateTime");
 
                     b.ToTable("Events", (string)null);
                 });
@@ -720,32 +717,143 @@ namespace SchoolManagementSystem.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTimeOffset>("AdmissionDate")
-                        .HasColumnType("datetimeoffset");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("AdmissionNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ArabicStudentName")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("BanglaStudentName")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("BloodGroup")
                         .HasMaxLength(5)
                         .HasColumnType("nvarchar(5)");
 
+                    b.Property<string>("City")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
                     b.Property<int>("ClassId")
                         .HasColumnType("int");
+
+                    b.Property<int?>("ClassId1")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Country")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<DateTimeOffset>("DOB")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("DocumentUrl")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("EmergencyContactName")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("EmergencyPhone")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("FatherName")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("FatherPhone")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<int?>("Gender")
                         .HasColumnType("int");
+
+                    b.Property<string>("GuardianEmail")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("GuardianName")
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<string>("RollNo")
-                        .IsRequired()
+                    b.Property<string>("GuardianPhone")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LeavingDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("LeavingReason")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("MedicalNotes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("MotherName")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("MotherPhone")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("NationalId")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<double?>("PreviousGPA")
+                        .HasColumnType("float");
+
+                    b.Property<string>("PreviousSchoolName")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("ProfileImageUrl")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("RollNo")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
                     b.Property<int>("SectionId")
                         .HasColumnType("int");
+
+                    b.Property<int?>("SectionId1")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StudentName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("TranslatedNames")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -754,11 +862,21 @@ namespace SchoolManagementSystem.Migrations
 
                     b.HasIndex("ClassId");
 
+                    b.HasIndex("ClassId1");
+
+                    b.HasIndex("RollNo")
+                        .IsUnique();
+
                     b.HasIndex("SectionId");
+
+                    b.HasIndex("SectionId1");
+
+                    b.HasIndex("StudentName")
+                        .HasDatabaseName("IX_StudentName");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Students", (string)null);
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("SchoolManagementSystem.Models.Subject", b =>
@@ -1307,21 +1425,29 @@ namespace SchoolManagementSystem.Migrations
             modelBuilder.Entity("SchoolManagementSystem.Models.Student", b =>
                 {
                     b.HasOne("SchoolManagementSystem.Models.Class", "Class")
-                        .WithMany("Students")
+                        .WithMany()
                         .HasForeignKey("ClassId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("SchoolManagementSystem.Models.Section", "Section")
+                    b.HasOne("SchoolManagementSystem.Models.Class", null)
                         .WithMany("Students")
+                        .HasForeignKey("ClassId1");
+
+                    b.HasOne("SchoolManagementSystem.Models.Section", "Section")
+                        .WithMany()
                         .HasForeignKey("SectionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("SchoolManagementSystem.Models.Section", null)
+                        .WithMany("Students")
+                        .HasForeignKey("SectionId1");
+
                     b.HasOne("SchoolManagementSystem.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Class");

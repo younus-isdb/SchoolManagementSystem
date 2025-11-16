@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SchoolManagementSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class initialCreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -50,12 +50,12 @@ namespace SchoolManagementSystem.Migrations
                     EventId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     StartDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    EndDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    EndDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     IsAllDay = table.Column<bool>(type: "bit", nullable: false),
                     Location = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    Audience = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Audience = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
@@ -425,15 +425,43 @@ namespace SchoolManagementSystem.Migrations
                     StudentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
+                    StudentName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    ArabicStudentName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    BanglaStudentName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
                     ClassId = table.Column<int>(type: "int", nullable: false),
                     SectionId = table.Column<int>(type: "int", nullable: false),
-                    RollNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    RollNo = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
+                    AdmissionNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    NationalId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    AdmissionDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "GETDATE()"),
                     Gender = table.Column<int>(type: "int", nullable: true),
                     DOB = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     BloodGroup = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: true),
+                    FatherName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    FatherPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    MotherName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    MotherPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     GuardianName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    GuardianPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    GuardianEmail = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
                     Address = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    AdmissionDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                    City = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    Country = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    EmergencyContactName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    EmergencyPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    MedicalNotes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    PreviousSchoolName = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    PreviousGPA = table.Column<double>(type: "float", nullable: true),
+                    ProfileImageUrl = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    DocumentUrl = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    LeavingDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LeavingReason = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    TranslatedNames = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "GETDATE()"),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    ClassId1 = table.Column<int>(type: "int", nullable: true),
+                    SectionId1 = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -445,17 +473,27 @@ namespace SchoolManagementSystem.Migrations
                         principalColumn: "ClassId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
+                        name: "FK_Students_Classes_ClassId1",
+                        column: x => x.ClassId1,
+                        principalTable: "Classes",
+                        principalColumn: "ClassId");
+                    table.ForeignKey(
                         name: "FK_Students_Sections_SectionId",
                         column: x => x.SectionId,
                         principalTable: "Sections",
                         principalColumn: "SectionId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
+                        name: "FK_Students_Sections_SectionId1",
+                        column: x => x.SectionId1,
+                        principalTable: "Sections",
+                        principalColumn: "SectionId");
+                    table.ForeignKey(
                         name: "FK_Students_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -841,11 +879,6 @@ namespace SchoolManagementSystem.Migrations
                 column: "TeacherId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Events_StartDateTime",
-                table: "Events",
-                column: "StartDateTime");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ExamResults_ExamId",
                 table: "ExamResults",
                 column: "ExamId");
@@ -937,14 +970,35 @@ namespace SchoolManagementSystem.Migrations
                 column: "ClassId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_StudentName",
+                table: "Students",
+                column: "StudentName");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Students_ClassId",
                 table: "Students",
                 column: "ClassId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Students_ClassId1",
+                table: "Students",
+                column: "ClassId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Students_RollNo",
+                table: "Students",
+                column: "RollNo",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Students_SectionId",
                 table: "Students",
                 column: "SectionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Students_SectionId1",
+                table: "Students",
+                column: "SectionId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Students_UserId",

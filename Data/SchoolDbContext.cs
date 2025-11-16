@@ -138,17 +138,17 @@ namespace SchoolManagementSystem.Models
                 builder.HasOne(s => s.User)
                           .WithMany()
                           .HasForeignKey(s => s.UserId)
-                          .OnDelete(DeleteBehavior.Cascade);
+                          .OnDelete(DeleteBehavior.Restrict);
 
                 builder.HasOne(s => s.Class)
                           .WithMany()
                           .HasForeignKey(s => s.ClassId)
-                          .OnDelete(DeleteBehavior.Cascade);
+                          .OnDelete(DeleteBehavior.Restrict);
 
                 builder.HasOne(s => s.Section)
                           .WithMany()
                           .HasForeignKey(s => s.SectionId)
-                          .OnDelete(DeleteBehavior.Cascade);
+                          .OnDelete(DeleteBehavior.Restrict);
 
                 // Column Configurations (Data Annotations)
                 builder.Property(s => s.StudentName)

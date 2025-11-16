@@ -1,0 +1,24 @@
+﻿@using SchoolManagementSystem.ViewModels
+@model LoginModel
+
+<form method="post">
+    <div asp-validation-summary="All"></div>
+
+    <div>
+        <label asp-for="UserName" class="form-label"></label>
+        <input  asp-for="UserName" class="form-control"/>
+        <span asp-validation-for="UserName" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Password" class="form-label"></label>
+        <input asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="RememberMe" class="form-label"></label>
+        <input asp-for="RememberMe" class="form-check" />
+        <span asp-validation-for="RememberMe" class="text-danger"></span>
+    </div>
+    <button class="btn btn-success">Login</button>
+    <a asp-action="Register" class="btn btn-info" asp-route-ReturnUrl="@Model.ReturnUrl">New?</a>
+</form>
