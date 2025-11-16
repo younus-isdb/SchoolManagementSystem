@@ -96,7 +96,7 @@ namespace SchoolManagementSystem.Controllers
             // Quick Links (Static or Role-Based)
             dashboardData.QuickLinks = new List<QuickLink>
 {
-    new QuickLink { Title="Add Student", Url="/Students/Create", IconClass="bi bi-person-plus-fill" },
+    new QuickLink { Title="Add Student", Url="/Student/Create", IconClass="bi bi-person-plus-fill" },
     new QuickLink { Title="Add Teacher", Url="/Teacher/Create", IconClass="bi bi-person-badge-fill" },
     new QuickLink { Title="Mark Attendance", Url="/Attendance/Mark", IconClass="bi bi-check2-square" },
     new QuickLink { Title="Fee Collection", Url="/FeeCollection", IconClass="bi bi-currency-dollar" },

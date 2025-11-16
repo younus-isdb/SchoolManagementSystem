@@ -1,14 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SchoolManagementSystem.Models;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 
 namespace SchoolManagementSystem.Models
 {
-   
+
 
     // -------------------------
     // 1. Role
@@ -65,7 +62,9 @@ namespace SchoolManagementSystem.Models
         public ICollection<Message> ReceivedMessages { get; set; } = new HashSet<Message>();
     }
 
-
+    // -------------------------
+    // 3. Student
+    // -------------------------
 
     public class Student
     {
@@ -222,6 +221,18 @@ namespace SchoolManagementSystem.Models
         // -------------------------
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
         public DateTimeOffset? UpdatedAt { get; set; }
+
+
+
+        // Navigation Property
+
+        public ICollection<Attendance> Attendances { get; set; } = new HashSet<Attendance>();
+        public ICollection<ExamResult> ExamResults { get; set; } = new HashSet<ExamResult>();
+        public ICollection<FeeCollection> FeeCollections { get; set; } = new HashSet<FeeCollection>();
+        public ICollection<HostelResident> HostelResidents { get; set; } = new HashSet<HostelResident>();
+        public ICollection<TransportAssignment> TransportAssignments { get; set; } = new HashSet<TransportAssignment>();
+        public ICollection<Submission> Submissions { get; set; } = new HashSet<Submission>();
+
     }
 
     // -------------------------
@@ -272,7 +283,7 @@ namespace SchoolManagementSystem.Models
     //    public ICollection<Submission> Submissions { get; set; } = new HashSet<Submission>();
     //}
 
-   
+
     // -------------------------
     // 4. Teacher
     // -------------------------
@@ -750,26 +761,26 @@ namespace SchoolManagementSystem.Models
     // -------------------------
     // 24. Timetable
     // -------------------------
-   public class Timetable
-{
-    public int Id { get; set; }
+    public class Timetable
+    {
+        public int Id { get; set; }
 
-    public int ClassId { get; set; }
-    public Class Class { get; set; } = default!;
+        public int ClassId { get; set; }
+        public Class Class { get; set; } = default!;
 
-    public int SectionId { get; set; }
-    public Section Section { get; set; } = default!;
+        public int SectionId { get; set; }
+        public Section Section { get; set; } = default!;
 
-    public int SubjectId { get; set; }
-    public Subject Subject { get; set; } = default!;
+        public int SubjectId { get; set; }
+        public Subject Subject { get; set; } = default!;
 
-    public int TeacherId { get; set; }
-    public Teacher Teacher { get; set; } = default!;
+        public int TeacherId { get; set; }
+        public Teacher Teacher { get; set; } = default!;
 
-    public string Day { get; set; } = string.Empty;
-    public string Period { get; set; } = string.Empty;
-    public string? Room { get; set; }
-}
+        public string Day { get; set; } = string.Empty;
+        public string Period { get; set; } = string.Empty;
+        public string? Room { get; set; }
+    }
 
 
     // -------------------------

@@ -1,79 +1,225 @@
-﻿@model SchoolManagementSystem.Models.Student
+﻿@model Student
 
-<div class="container mt-4">
-    <h2 class="mb-4 fw-bold text-success">Student Admission Form</h2>
+@{
+    ViewData["Title"] = "Create Student";
+}
 
-    <form asp-action="Create" method="post" class="row g-3">
+<h2 class="mb-4">Create Student</h2>
 
-        <!-- User Dropdown -->
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+
+    <div class="row">
+
+        <!-- Basic Info -->
         <div class="col-md-6">
-            <label class="form-label fw-semibold">User Account</label>
-            <select asp-for="UserId" class="form-select" asp-items="ViewBag.Users"></select>
+            <h4>Basic Information</h4>
+            <hr />
+
+            <div class="form-group">
+                <label asp-for="StudentName"></label>
+                <input asp-for="StudentName" class="form-control" />
+                <span asp-validation-for="StudentName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ArabicStudentName"></label>
+                <input asp-for="ArabicStudentName" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="BanglaStudentName"></label>
+                <input asp-for="BanglaStudentName" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="RollNo"></label>
+                <input asp-for="RollNo" class="form-control" />
+                <span asp-validation-for="RollNo" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AdmissionNumber"></label>
+                <input asp-for="AdmissionNumber" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="NationalId"></label>
+                <input asp-for="NationalId" class="form-control" />
+            </div>
         </div>
 
-        <!-- Class Dropdown -->
-        <div class="col-md-3">
-            <label class="form-label fw-semibold">Class</label>
-            <select asp-for="ClassId" class="form-select" asp-items="ViewBag.Classes"></select>
-        </div>
+        <!-- Academic Info -->
+        <div class="col-md-6">
+            <h4>Academic Information</h4>
+            <hr />
 
-        <!-- Section Dropdown -->
-        <div class="col-md-3">
-            <label class="form-label fw-semibold">Section</label>
-            <select asp-for="SectionId" class="form-select" asp-items="ViewBag.Sections"></select>
-        </div>
+            <div class="form-group">
+                <label asp-for="ClassId">Class</label>
+                <select asp-for="ClassId" asp-items="ViewBag.ClassList" class="form-control"></select>
+            </div>
 
-        <!-- Roll No -->
+            <div class="form-group">
+                <label asp-for="SectionId">Section</label>
+                <select asp-for="SectionId" asp-items="ViewBag.SectionList" class="form-control"></select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AdmissionDate"></label>
+                <input asp-for="AdmissionDate" type="date" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PreviousSchoolName"></label>
+                <input asp-for="PreviousSchoolName" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PreviousGPA"></label>
+                <input asp-for="PreviousGPA" class="form-control" />
+            </div>
+
+        </div>
+    </div>
+
+    <hr />
+
+    <!-- Personal Info -->
+    <h4>Personal Information</h4>
+    <div class="row">
         <div class="col-md-4">
-            <label class="form-label fw-semibold">Roll Number</label>
-            <input asp-for="RollNo" class="form-control" />
+
+            <div class="form-group">
+                <label asp-for="Gender"></label>
+                <select asp-for="Gender" class="form-control">
+                    <option value="">Select Gender</option>
+                    <option value="0">Male</option>
+                    <option value="1">Female</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DOB"></label>
+                <input asp-for="DOB" type="date" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="BloodGroup"></label>
+                <input asp-for="BloodGroup" class="form-control" />
+            </div>
+
         </div>
 
-        <!-- Gender -->
         <div class="col-md-4">
-            <label class="form-label fw-semibold">Gender</label>
-            <select asp-for="Gender" class="form-select">
-                <option value="">-- Select --</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-            </select>
+            <h5>Father Info</h5>
+
+            <div class="form-group">
+                <label asp-for="FatherName"></label>
+                <input asp-for="FatherName" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="FatherPhone"></label>
+                <input asp-for="FatherPhone" class="form-control" />
+            </div>
         </div>
 
-        <!-- Blood Group -->
         <div class="col-md-4">
-            <label class="form-label fw-semibold">Blood Group</label>
-            <input asp-for="BloodGroup" class="form-control" />
-        </div>
+            <h5>Mother Info</h5>
 
-        <!-- DOB -->
+            <div class="form-group">
+                <label asp-for="MotherName"></label>
+                <input asp-for="MotherName" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="MotherPhone"></label>
+                <input asp-for="MotherPhone" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <!-- Guardian -->
+    <h4>Guardian Information</h4>
+    <div class="row">
         <div class="col-md-4">
-            <label class="form-label fw-semibold">Date of Birth</label>
-            <input asp-for="DOB" type="date" class="form-control" />
+            <div class="form-group">
+                <label asp-for="GuardianName"></label>
+                <input asp-for="GuardianName" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="GuardianPhone"></label>
+                <input asp-for="GuardianPhone" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="GuardianEmail"></label>
+                <input asp-for="GuardianEmail" class="form-control" />
+            </div>
         </div>
 
-        <!-- Guardian Name -->
-        <div class="col-md-8">
-            <label class="form-label fw-semibold">Guardian Name</label>
-            <input asp-for="GuardianName" class="form-control" />
-        </div>
-
-        <!-- Address -->
-        <div class="col-12">
-            <label class="form-label fw-semibold">Address</label>
-            <textarea asp-for="Address" class="form-control" rows="3"></textarea>
-        </div>
-
-        <!-- Admission Date -->
         <div class="col-md-4">
-            <label class="form-label fw-semibold">Admission Date</label>
-            <input asp-for="AdmissionDate" type="date" class="form-control" />
+
+            <div class="form-group">
+                <label asp-for="Address"></label>
+                <textarea asp-for="Address" class="form-control"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="City"></label>
+                <input asp-for="City" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Country"></label>
+                <input asp-for="Country" class="form-control" />
+            </div>
         </div>
 
-        <!-- Submit -->
-        <div class="col-12 mt-3">
-            <button type="submit" class="btn btn-success px-4 py-2 fw-bold">Submit Admission</button>
-        </div>
+        <div class="col-md-4">
+            <h5>Emergency</h5>
+            <div class="form-group">
+                <label asp-for="EmergencyContactName"></label>
+                <input asp-for="EmergencyContactName" class="form-control" />
+            </div>
 
-    </form>
-</div>
+            <div class="form-group">
+                <label asp-for="EmergencyPhone"></label>
+                <input asp-for="EmergencyPhone" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="MedicalNotes"></label>
+                <textarea asp-for="MedicalNotes" class="form-control"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <!-- Media -->
+    <h4>Media / Documents</h4>
+
+    <div class="form-group">
+        <label asp-for="ProfileImageUrl">Profile Image</label>
+        <input type="file" name="ProfileImage" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DocumentUrl">Document (PDF / Image)</label>
+        <input type="file" name="DocumentFile" class="form-control" />
+    </div>
+
+    <hr />
+
+    <!-- Submit -->
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

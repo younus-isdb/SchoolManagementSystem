@@ -66,11 +66,11 @@
                 @if (User.IsInRole("Admin"))
                 {
                     <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Students" asp-action="Index">Students</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Teachers" asp-action="Index">Teachers</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Classes" asp-action="Index">Classes</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Subjects" asp-action="Index">Subjects</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Exams" asp-action="Index">Exams</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Student" asp-action="Index">Students</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Teacher" asp-action="Index">Teachers</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Class" asp-action="Index">Classes</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Subject" asp-action="Index">Subjects</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Exam" asp-action="Index">Exams</a></li>
                 }
                 @if (User.IsInRole("Teacher"))
                 {
