@@ -1,0 +1,58 @@
+﻿@model SchoolManagementSystem.Models.Class
+
+@{
+    ViewData["Title"] = "Create Class";
+}
+
+<h2 class="mb-4">Create New Class</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Class Name -->
+                    <div class="mb-3">
+                        <label asp-for="ClassName" class="form-label"></label>
+                        <input asp-for="ClassName" class="form-control" placeholder="Enter Class Name" />
+                        <span asp-validation-for="ClassName" class="text-danger"></span>
+                    </div>
+
+                    <!-- Session Year -->
+                    <div class="mb-3">
+                        <label asp-for="SessionYear" class="form-label"></label>
+                        <input asp-for="SessionYear" class="form-control" placeholder="2024-2025" />
+                        <span asp-validation-for="SessionYear" class="text-danger"></span>
+                    </div>
+
+                    <!-- Department -->
+                    <div class="mb-3">
+                        <label asp-for="DepartmentId" class="form-label"></label>
+                        <select asp-for="DepartmentId" class="form-select" asp-items="ViewBag.Departments">
+                            <option value="">-- Select Department --</option>
+                        </select>
+                        <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Create
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left-circle"></i> Back
+                        </a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,37 @@
+﻿@model SchoolManagementSystem.Models.Class
+@{
+    ViewData["Title"] = "Edit Class";
+}
+
+<h2>Edit Class</h2>
+
+<form asp-action="Edit" method="post" class="needs-validation" novalidate>
+    <input type="hidden" asp-for="ClassId" />
+
+    <div class="mb-3">
+        <label asp-for="ClassName" class="form-label"></label>
+        <input asp-for="ClassName" class="form-control" placeholder="Enter Class Name" required />
+        <span asp-validation-for="ClassName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SessionYear" class="form-label"></label>
+        <input asp-for="SessionYear" class="form-control" placeholder="YYYY-YYYY" />
+        <span asp-validation-for="SessionYear" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DepartmentId" class="form-label"></label>
+        <select asp-for="DepartmentId" class="form-select" asp-items="@(new SelectList(ViewBag.Departments, "DepartmentId", "DepartmentName"))" required>
+            <option value="">-- Select Department --</option>
+        </select>
+        <span asp-validation-for="DepartmentId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Save Changes</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
