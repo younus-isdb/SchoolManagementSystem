@@ -1,32 +1,10 @@
 ﻿@model SchoolManagementSystem.Models.Class
-@{
-    ViewData["Title"] = "Delete Class";
-}
 
-<h2 class="text-danger mb-4">Delete Class</h2>
+<h2>Delete Class</h2>
 
-<div class="card shadow-sm border-danger">
-    <div class="card-body">
-        <h5 class="card-title text-danger"><i class="bi bi-exclamation-triangle-fill"></i> Are you sure?</h5>
+<p>Are you sure you want to delete <strong>@Model.ClassName</strong>?</p>
 
-        <dl class="row mt-3">
-            <dt class="col-sm-3">Class ID</dt>
-            <dd class="col-sm-9">@Model.ClassId</dd>
-
-            <dt class="col-sm-3">Class Name</dt>
-            <dd class="col-sm-9">@Model.ClassName</dd>
-
-            <dt class="col-sm-3">Session Year</dt>
-            <dd class="col-sm-9">@Model.SessionYear</dd>
-
-            <dt class="col-sm-3">Department</dt>
-            <dd class="col-sm-9">@Model.Department.DepartmentName</dd>
-        </dl>
-
-        <form asp-action="Delete" method="post" class="mt-3">
-            <input type="hidden" asp-for="ClassId" />
-            <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Delete</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
-</div>
+<form method="post">
+    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <a href="/Class/Index" class="btn btn-secondary">Cancel</a>
+</form>

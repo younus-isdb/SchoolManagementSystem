@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -11,8 +12,8 @@ namespace SchoolManagementSystem.Models
     // 1. Role
     // -------------------------
     [Index(nameof(RoleName), IsUnique = true)]
-    public class Role
-    {
+	public class Role : IdentityRole<int>
+	{
         [Key]
         public int RoleId { get; set; }
 
@@ -26,7 +27,7 @@ namespace SchoolManagementSystem.Models
     // 2. User
     // -------------------------
     [Index(nameof(Email), IsUnique = true)]
-    public class User
+    public class User : IdentityUser<int>
     {
         [Key]
         public int UserId { get; set; }

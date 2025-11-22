@@ -5,7 +5,7 @@ using SchoolManagementSystem.Models;
 using SchoolManagementSystem.ViewModels;
 
 
-namespace ShamsFashion.Controllers
+namespace SchoolManagementSystem.Controllers
 {
 
     public class AccountController(SignInManager<User> signInManager, UserManager<User> userManager, ILogger<AccountController> logger) : Controller

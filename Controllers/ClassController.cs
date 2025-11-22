@@ -1,80 +1,114 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.Models;
 
-namespace SchoolManagementSystem.Controllers
+public class ClassController : Controller
 {
-    public class ClassController : Controller
-    {
-        private readonly SchoolDbContext _context;
+	
+	private readonly SchoolDbContext _context;
 
-        public ClassController(SchoolDbContext context)
-        {
-            _context = context;
-        }
+	public ClassController(SchoolDbContext context)
+	{
+		_context = context;
+	}
 
-        // GET: Create
-        [HttpGet]
-        public async Task<IActionResult> Create()
-        {
-            ViewBag.Departments = new SelectList(
-                await _context.Departments.ToListAsync(),
-                "DepartmentId",
-                "DepartmentName"
-            );
+	// GET: Class
+	public async Task<IActionResult> Index()
+	{
+		var data = await _context.Classes
+			.Include(c => c.Department)
+			.ToListAsync();
 
-            return View();
-        }
+		return View(data);
+	}
+	[Authorize]
+	// GET: Create
+	public IActionResult Create()
+	{
+		ViewBag.DepartmentList = _context.Departments.ToList();
+		return View();
+	}
 
-        // POST: Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Class newClass)
-        {
-            // Fix Navigation Properties to avoid EF Core binding issues
-            newClass.Department = null!;
-            newClass.Sections = null!;
-            newClass.Students = null!;
-            newClass.Subjects = null!;
-            newClass.ClassSubjects = null!;
-            newClass.Exams = null!;
-            newClass.Timetables = null!;
-            newClass.Assignments = null!;
-            newClass.FeeTypes = null!;
+	// POST: Create
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> Create(Class model)
+	{
+		if (ModelState.IsValid)
+		{
+			_context.Classes.Add(model);
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(Index));
+		}
 
-            if (!ModelState.IsValid)
-            {
-                // Re-populate dropdown
-                ViewBag.Departments = new SelectList(
-                    await _context.Departments.ToListAsync(),
-                    "DepartmentId",
-                    "DepartmentName",
-                    newClass.DepartmentId
-                );
+		// Required again when validation fails
+		ViewBag.DepartmentList = _context.Departments.ToList();
+		return View(model);
+	}
 
-                // Debug ModelState errors
-                var errors = string.Join("; ", ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage));
-                Console.WriteLine(errors);
+	// GET: Edit
+	public async Task<IActionResult> Edit(int id)
+	{
+		var data = await _context.Classes.FindAsync(id);
+		if (data == null) return NotFound();
 
-                return View(newClass);
-            }
+		ViewBag.DepartmentList = _context.Departments.ToList();
+		return View(data);
+	}
 
-            _context.Classes.Add(newClass);
-            await _context.SaveChangesAsync();
+	// POST: Edit
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> Edit(Class model)
+	{
+		if (ModelState.IsValid)
+		{
+			_context.Classes.Update(model);
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(Index));
+		}
 
-            return RedirectToAction("Index");
-        }
+		ViewBag.DepartmentList = _context.Departments.ToList();
+		return View(model);
+	}
 
-        // GET: Index (List)
-        public async Task<IActionResult> Index()
-        {
-            var classes = await _context.Classes
-                .Include(c => c.Department)
-                .ToListAsync();
-            return View(classes);
-        }
-    }
+	// GET: Details
+	public async Task<IActionResult> Details(int id)
+	{
+		var data = await _context.Classes
+			.Include(c => c.Department)
+			.FirstOrDefaultAsync(c => c.ClassId == id);
+
+		if (data == null) return NotFound();
+
+		return View(data);
+	}
+
+	// GET: Delete
+	public async Task<IActionResult> Delete(int id)
+	{
+		var data = await _context.Classes
+			.Include(c => c.Department)
+			.FirstOrDefaultAsync(c => c.ClassId == id);
+
+		if (data == null) return NotFound();
+
+		return View(data);
+	}
+
+	// POST: Delete
+	[HttpPost, ActionName("Delete")]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> DeleteConfirmed(int id)
+	{
+		var data = await _context.Classes.FindAsync(id);
+		if (data != null)
+		{
+			_context.Classes.Remove(data);
+			await _context.SaveChangesAsync();
+		}
+
+		return RedirectToAction(nameof(Index));
+	}
 }

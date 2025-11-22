@@ -1,28 +1,28 @@
 ﻿@model IEnumerable<SchoolManagementSystem.Models.Class>
 
-<h2>Classes</h2>
-<a asp-action="Create" class="btn btn-primary mb-3">Add New</a>
+<h2>Class List</h2>
+<a class="btn btn-primary mb-2" href="/Class/Create">Create New</a>
 
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>Name</th>
+            <th>Class Name</th>
             <th>Session</th>
             <th>Department</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var cls in Model)
+        @foreach (var item in Model)
         {
             <tr>
-                <td>@cls.ClassName</td>
-                <td>@cls.SessionYear</td>
-                <td>@cls.Department.DepartmentName</td>
+                <td>@item.ClassName</td>
+                <td>@item.SessionYear</td>
+                <td>@item.Department.DepartmentName</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@cls.ClassId" class="btn btn-info btn-sm">Details</a>
-                    <a asp-action="Edit" asp-route-id="@cls.ClassId" class="btn btn-warning btn-sm">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@cls.ClassId" class="btn btn-danger btn-sm">Delete</a>
+                    <a href="/Class/Details/@item.ClassId" class="btn btn-info btn-sm">Details</a>
+                    <a href="/Class/Edit/@item.ClassId" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="/Class/Delete/@item.ClassId" class="btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>
         }

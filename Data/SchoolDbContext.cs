@@ -1,23 +1,25 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection.Emit;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Newtonsoft.Json;
 
 namespace SchoolManagementSystem.Models
 {
-    public class SchoolDbContext : DbContext
-    {
-        public SchoolDbContext(DbContextOptions<SchoolDbContext> options) : base(options)
-        {
-        }
 
-        // =============================
-        // 📘 DbSet: 30+ Tables
-        // =============================
-        public DbSet<Role> Roles { get; set; } = default!;
+	public class SchoolDbContext : IdentityDbContext<User, Role, int>
+	{
+		public SchoolDbContext(DbContextOptions<SchoolDbContext> options) : base(options)
+		{
+		}
+
+		// =============================
+		// 📘 DbSet: 30+ Tables
+		// =============================
+		public DbSet<Role> Roles { get; set; } = default!;
         public DbSet<User> Users { get; set; } = default!;
         public DbSet<Student> Students { get; set; } = default!;
         public DbSet<Teacher> Teachers { get; set; } = default!;
