@@ -26,7 +26,7 @@ namespace SchoolManagementSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = userManager.Users.FirstOrDefault(u => u.Name == model.UserName || u.Email == model.UserName);
+                var user = userManager.Users.FirstOrDefault(u => u.UserName == model.UserName || u.Email == model.UserName);
 
                 if (user == null)
                 {
@@ -74,7 +74,7 @@ namespace SchoolManagementSystem.Controllers
             {
                 var newUser = new User()
                 {
-                    Name = model.UserName,
+                    UserName = model.UserName,
                     Email = model.UserName
                 }
                 ;

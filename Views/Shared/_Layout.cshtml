@@ -47,14 +47,11 @@
 
         /* Mobile Responsive Sidebar */
         @@media (max-width: 992px) {
-            .sidebar
-
-        {
-            position: relative;
-            width: 100%;
-            height: auto;
-        }
-
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
         }
     </style>
 </head>
@@ -73,6 +70,7 @@
                     <li class="nav-item"><a class="nav-link" asp-controller="Class" asp-action="Index">Classes</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Subject" asp-action="Index">Subjects</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Exam" asp-action="Index">Exams</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="IssuedBook" asp-action="Index">IssuedBook</a></li>
                 }
                 @if (User.IsInRole("Teacher"))
                 {
@@ -91,12 +89,22 @@
 
         <!-- Main Content -->
         <div class="flex-grow-1 p-4">
-            <nav class="navbar mb-4">
-                <span class="navbar-brand">Halishahar Islamia Madrasah</span>
-                <div class="d-flex ms-auto">
+            @*  <nav class="navbar mb-4"> *@
+            @*   <span class="navbar-brand">Halishahar Islamia Madrasah</span> *@
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm text-light border-bottom box-shadow mb-3">
+
+                <div class="container-fluid">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Halishahar Islamia Madrasah</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    @* <a class="btn btn-warning btn-sm" asp-controller="Account" asp-action="Login">Login</a> *@
+                </div>
+                @*  <div class="d-flex ms-auto">
                     <span class="text-white me-3">Hello, @User.Identity.Name</span>
                     <a class="btn btn-warning btn-sm" asp-controller="Account" asp-action="Logout">Logout</a>
-                </div>
+                </div> *@
             </nav>
 
             <main role="main" class="container-fluid">

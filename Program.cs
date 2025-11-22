@@ -1,6 +1,7 @@
-using System;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.Models;
+using SchoolManagementSystem.Services;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ builder.Services.AddDbContext<SchoolDbContext>(options =>
 builder.Services.AddIdentity<User, Role>()
 			   .AddEntityFrameworkStores<SchoolDbContext>()
 			  ;
+builder.Services.AddFileUploader();
 
 var app = builder.Build();
 
