@@ -22,7 +22,7 @@ public class ClassController : Controller
 
 		return View(data);
 	}
-	[Authorize]
+	//[Authorize]
 	// GET: Create
 	public IActionResult Create()
 	{

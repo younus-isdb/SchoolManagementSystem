@@ -336,7 +336,7 @@ namespace SchoolManagementSystem.Models
         [ForeignKey(nameof(Department))]
         public int DepartmentId { get; set; }
 
-        public Department Department { get; set; } = default!;
+        public Department? Department { get; set; } = default;
 
         public ICollection<Section> Sections { get; set; } = new HashSet<Section>();
         public ICollection<Student> Students { get; set; } = new HashSet<Student>();
@@ -666,7 +666,7 @@ namespace SchoolManagementSystem.Models
         public string Content { get; set; } = default!;
 
         [ForeignKey(nameof(AppRole))]
-        public int VisibleToRoleId { get; set; } 
+        public Guid? VisibleToRoleId { get; set; } 
 
         public DateTimeOffset DatePosted { get; set; } = DateTimeOffset.UtcNow;
 
@@ -792,11 +792,12 @@ namespace SchoolManagementSystem.Models
         [Key]
         public int MessageId { get; set; }
 
-        //[ForeignKey(nameof(Sender))]
-        //public int SenderId { get; set; }
+        [ForeignKey(nameof(Sender))]
+        public Guid SenderId { get; set; }
 
-        //[ForeignKey(nameof(Receiver))]
-        //public int ReceiverId { get; set; }
+        [ForeignKey(nameof(Receiver))]
+
+		public Guid ReceiverId { get; set; }
 
         [Required, MaxLength(2000)]
         public string Content { get; set; } = default!;
@@ -806,11 +807,13 @@ namespace SchoolManagementSystem.Models
         [MaxLength(50)]
         public string? Status { get; set; }
 
-        //[InverseProperty(nameof(AppUser.SentMessages))]
-        //public AppUser Sender { get; set; } = default!;
+        [InverseProperty(nameof(AppUser.SendMessages))]
+		[DeleteBehavior(DeleteBehavior.NoAction)]
+		public AppUser Sender { get; set; } = default!;
 
-        //[InverseProperty(nameof(AppUser.ReceivedMessages))]
-        //public AppUser Receiver { get; set; } = default!;
+        [InverseProperty(nameof(AppUser.ReceiveMessages))]
+		[DeleteBehavior(DeleteBehavior.NoAction)]
+		public AppUser Receiver { get; set; } = default!;
     }
 
     // -------------------------
