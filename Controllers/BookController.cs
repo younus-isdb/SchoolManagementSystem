@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AspNetCoreGeneratedDocument;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.Models;
 using SchoolManagementSystem.Services;
+using System.Threading.Tasks;
 
 namespace SchoolManagementSystem.Controllers
 {
@@ -26,15 +28,15 @@ namespace SchoolManagementSystem.Controllers
         }
 
         // GET: BookController/Details/5
-        public async Task< ActionResult> Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            if (id<=0)
+            if (id <= 0)
             {
                 return NotFound();
             }
             var books = await _db.Books.FirstOrDefaultAsync(b => b.BookId == id);
 
-            if (books==null)
+            if (books == null)
             {
                 return NotFound();
             }
@@ -64,7 +66,7 @@ namespace SchoolManagementSystem.Controllers
                 }
                 return View(book);
             }
-            
+
             catch
             {
                 ModelState.AddModelError("", "Unable to save changes. Please try again.");
@@ -73,45 +75,126 @@ namespace SchoolManagementSystem.Controllers
         }
 
         // GET: BookController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            return View();
+            if (id <= 0)
+            {
+                return NotFound();
+            }
+            var books = await _db.Books.FindAsync(id);
+            if (books == null)
+            {
+                return NotFound();
+            }
+            return View(books);
         }
 
         // POST: BookController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(int id, Book book)
         {
-            try
+            if (id != book.BookId)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
+
             }
-            catch
+            if (ModelState.IsValid)
             {
-                return View();
+                try
+                {
+                    var exixtingbook = await _db.Books.FindAsync(id);
+                    if (exixtingbook != null)
+                    {
+                        var diff = book.TotalCopies - exixtingbook.TotalCopies;
+
+                        exixtingbook.Title = book.Title;
+                        exixtingbook.Author = book.Author;
+                        exixtingbook.ISBN = book.ISBN;
+                        exixtingbook.Category = book.Category;
+                        exixtingbook.TotalCopies = book.TotalCopies;
+                        exixtingbook.AvailableCopies = Math.Max(0, exixtingbook.AvailableCopies + diff);
+
+                        _db.Update(exixtingbook);
+                        await _db.SaveChangesAsync();
+
+                    }
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!Bookexixts(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             }
+
+            return View(book);
+
+
+        }
+        private bool Bookexixts(int id)
+        {
+            return _db.Books.Any(b => b.BookId == id);
         }
 
+
         // GET: BookController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            return View();
+            if (id<=0)
+            {
+                return NotFound();
+            }
+            var book = await _db.Books.FirstOrDefaultAsync(b => b.BookId == id);
+            if (book==null)
+            {
+                return NotFound();
+            }
+            return View(book);
         }
 
         // POST: BookController/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> DeleteConfirmed(int id)
         {
             try
             {
+                var book = await _db.Books.FindAsync(id);
+                if (book == null)
+                {
+                    return NotFound();
+                }
+
+                bool hasActBorrow = await CheckForActiveBorrowings(id);
+
+                if (hasActBorrow)
+                {
+                    ModelState.AddModelError("", "Cannot delete book with active borrowings.");
+                    return View(book);
+                }
+
+                _db.Books.Remove(book);
+                await _db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            catch
+           
+            catch (Exception ex)
             {
-                return View();
+                ModelState.AddModelError("", "An error occurred while deleting the book.");
+                return View(await _db.Books.FindAsync(id));
             }
+        }
+
+        private async Task<bool> CheckForActiveBorrowings(int bookId)
+        {
+            return false;
         }
     }
 }
