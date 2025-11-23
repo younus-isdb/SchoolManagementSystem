@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
-
+using Microsoft.AspNetCore.Identity;
 namespace SchoolManagementSystem.Models
 {
+	public class SchoolDbContext : IdentityDbContext<AppUser, AppRole, Guid>
 
-	public class SchoolDbContext : IdentityDbContext<User, Role, int>
 	{
 		public SchoolDbContext(DbContextOptions<SchoolDbContext> options) : base(options)
 		{
@@ -19,8 +19,8 @@ namespace SchoolManagementSystem.Models
 		// =============================
 		// 📘 DbSet: 30+ Tables
 		// =============================
-		public DbSet<Role> Roles { get; set; } = default!;
-        public DbSet<User> Users { get; set; } = default!;
+		//public DbSet<Role> Roles { get; set; } = default!;
+  //      public DbSet<User> Users { get; set; } = default!;
         public DbSet<Student> Students { get; set; } = default!;
         public DbSet<Teacher> Teachers { get; set; } = default!;
         public DbSet<Class> Classes { get; set; } = default!;
@@ -59,8 +59,8 @@ namespace SchoolManagementSystem.Models
         {
            
             // Apply all configurations
-            modelBuilder.ApplyConfiguration(new RoleConfiguration());
-            modelBuilder.ApplyConfiguration(new UserConfiguration());
+            //modelBuilder.ApplyConfiguration(new RoleConfiguration());
+            //modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new StudentConfiguration());
             modelBuilder.ApplyConfiguration(new TeacherConfiguration());
             modelBuilder.ApplyConfiguration(new ClassConfiguration());
@@ -84,8 +84,8 @@ namespace SchoolManagementSystem.Models
             modelBuilder.ApplyConfiguration(new TransportAssignmentConfiguration());
             modelBuilder.ApplyConfiguration(new TimetableConfiguration());
             modelBuilder.ApplyConfiguration(new MessageConfiguration());
-            modelBuilder.ApplyConfiguration(new LoginLogConfiguration());
-            modelBuilder.ApplyConfiguration(new ActivityLogConfiguration());
+            //modelBuilder.ApplyConfiguration(new LoginLogConfiguration());
+            //modelBuilder.ApplyConfiguration(new ActivityLogConfiguration());
             modelBuilder.ApplyConfiguration(new EventConfiguration());
             modelBuilder.ApplyConfiguration(new AssignmentConfiguration());
             modelBuilder.ApplyConfiguration(new SubmissionConfiguration());
@@ -99,30 +99,30 @@ namespace SchoolManagementSystem.Models
         // Configurations
         // ==========================
 
-        public class RoleConfiguration : IEntityTypeConfiguration<Role>
-        {
-            public void Configure(EntityTypeBuilder<Role> builder)
-            {
-                builder.ToTable("Roles");
-                builder.HasKey(r => r.RoleId);
-                builder.Property(r => r.RoleName).IsRequired().HasMaxLength(50);
-                builder.HasIndex(r => r.RoleName).IsUnique();
-            }
-        }
+        //public class RoleConfiguration : IEntityTypeConfiguration<AppRole>
+        //{
+        //    public void Configure(EntityTypeBuilder<AppRole> builder)
+        //    {
+        //        builder.ToTable("Roles");
+        //        builder.HasKey(r => r.RoleId);
+        //        builder.Property(r => r.RoleName).IsRequired().HasMaxLength(50);
+        //        builder.HasIndex(r => r.RoleName).IsUnique();
+        //    }
+        //}
 
-        public class UserConfiguration : IEntityTypeConfiguration<User>
-        {
-            public void Configure(EntityTypeBuilder<User> builder)
-            {
-                builder.ToTable("Users");
-                builder.HasKey(u => u.UserId);
-                builder.Property(u => u.Name).IsRequired().HasMaxLength(100);
-                builder.Property(u => u.Email).IsRequired().HasMaxLength(150);
-                builder.HasIndex(u => u.Email).IsUnique();
-                builder.Property(u => u.PasswordHash).IsRequired().HasMaxLength(400);
-                builder.HasOne(u => u.Role).WithMany(r => r.Users).HasForeignKey(u => u.RoleId).OnDelete(DeleteBehavior.Restrict);
-            }
-        }
+        //public class UserConfiguration : IEntityTypeConfiguration<AppUser>
+        //{
+        //    public void Configure(EntityTypeBuilder<AppUser> builder)
+        //    {
+        //        builder.ToTable("Users");
+        //        builder.HasKey(u => u.UserId);
+        //        builder.Property(u => u.Name).IsRequired().HasMaxLength(100);
+        //        builder.Property(u => u.Email).IsRequired().HasMaxLength(150);
+        //        builder.HasIndex(u => u.Email).IsUnique();
+        //        builder.Property(u => u.PasswordHash).IsRequired().HasMaxLength(400);
+        //        builder.HasOne(u => u.Role).WithMany(r => r.Users).HasForeignKey(u => u.RoleId).OnDelete(DeleteBehavior.Restrict);
+        //    }
+        //}
 
         public class StudentConfiguration : IEntityTypeConfiguration<Student>
         {
@@ -137,7 +137,7 @@ namespace SchoolManagementSystem.Models
                 builder.HasIndex(s => s.RollNo).IsUnique();  // Roll No should be unique
 
                 // Relationships
-                builder.HasOne(s => s.User)
+                builder.HasOne(s => s.AppUser)
                           .WithMany()
                           .HasForeignKey(s => s.UserId)
                           .OnDelete(DeleteBehavior.Restrict);
@@ -201,7 +201,7 @@ namespace SchoolManagementSystem.Models
                 builder.HasKey(t => t.TeacherId);
                 builder.Property(t => t.Qualification).HasMaxLength(250);
                 builder.Property(t => t.Designation).HasMaxLength(150);
-                builder.HasOne(t => t.User).WithMany().HasForeignKey(t => t.UserId).OnDelete(DeleteBehavior.Cascade);
+                builder.HasOne(t => t.AppUser).WithMany().HasForeignKey(t => t.UserId).OnDelete(DeleteBehavior.Cascade);
                 builder.HasOne(t => t.Department).WithMany(d => d.Teachers).HasForeignKey(t => t.DepartmentId).OnDelete(DeleteBehavior.Restrict);
             }
         }
@@ -358,7 +358,7 @@ namespace SchoolManagementSystem.Models
                 builder.ToTable("IssuedBooks");
                 builder.HasKey(ib => ib.Id);
                 builder.HasOne(ib => ib.Book).WithMany(b => b.IssuedBooks).HasForeignKey(ib => ib.BookId).OnDelete(DeleteBehavior.Restrict);
-                builder.HasOne(ib => ib.User).WithMany().HasForeignKey(ib => ib.IssuedTo).OnDelete(DeleteBehavior.Restrict);
+                builder.HasOne(ib => ib.AppUser).WithMany().HasForeignKey(ib => ib.IssuedTo).OnDelete(DeleteBehavior.Restrict);
             }
         }
 
@@ -370,7 +370,7 @@ namespace SchoolManagementSystem.Models
                 builder.HasKey(n => n.NoticeId);
                 builder.Property(n => n.Title).IsRequired().HasMaxLength(200);
                 builder.Property(n => n.Content).IsRequired().HasMaxLength(4000);
-                builder.HasOne(n => n.Role).WithMany().HasForeignKey(n => n.VisibleToRoleId).OnDelete(DeleteBehavior.SetNull);
+                builder.HasOne(n => n.AppRole).WithMany().HasForeignKey(n => n.VisibleToRoleId).OnDelete(DeleteBehavior.SetNull);
             }
         }
 
@@ -466,30 +466,30 @@ namespace SchoolManagementSystem.Models
             {
                 builder.ToTable("Messages");
                 builder.HasKey(m => m.MessageId);
-                builder.HasOne(m => m.Sender).WithMany(u => u.SentMessages).HasForeignKey(m => m.SenderId).OnDelete(DeleteBehavior.Restrict);
-                builder.HasOne(m => m.Receiver).WithMany(u => u.ReceivedMessages).HasForeignKey(m => m.ReceiverId).OnDelete(DeleteBehavior.Restrict);
+                //builder.HasOne(m => m.Sender).WithMany(u => u.SentMessages).HasForeignKey(m => m.SenderId).OnDelete(DeleteBehavior.Restrict);
+                //builder.HasOne(m => m.Receiver).WithMany(u => u.ReceivedMessages).HasForeignKey(m => m.ReceiverId).OnDelete(DeleteBehavior.Restrict);
             }
         }
 
-        public class LoginLogConfiguration : IEntityTypeConfiguration<LoginLog>
-        {
-            public void Configure(EntityTypeBuilder<LoginLog> builder)
-            {
-                builder.ToTable("LoginLogs");
-                builder.HasKey(ll => ll.Id);
-                builder.HasOne(ll => ll.User).WithMany(u => u.LoginLogs).HasForeignKey(ll => ll.UserId).OnDelete(DeleteBehavior.Cascade);
-            }
-        }
+        //public class LoginLogConfiguration : IEntityTypeConfiguration<LoginLog>
+        //{
+        //    public void Configure(EntityTypeBuilder<LoginLog> builder)
+        //    {
+        //        builder.ToTable("LoginLogs");
+        //        builder.HasKey(ll => ll.Id);
+        //        builder.HasOne(ll => ll.AppUser).WithMany(u => u.LoginLogs).HasForeignKey(ll => ll.UserId).OnDelete(DeleteBehavior.Cascade);
+        //    }
+        //}
 
-        public class ActivityLogConfiguration : IEntityTypeConfiguration<ActivityLog>
-        {
-            public void Configure(EntityTypeBuilder<ActivityLog> builder)
-            {
-                builder.ToTable("ActivityLogs");
-                builder.HasKey(al => al.Id);
-                builder.HasOne(al => al.User).WithMany(u => u.ActivityLogs).HasForeignKey(al => al.UserId).OnDelete(DeleteBehavior.Cascade);
-            }
-        }
+        //public class ActivityLogConfiguration : IEntityTypeConfiguration<ActivityLog>
+        //{
+        //    public void Configure(EntityTypeBuilder<ActivityLog> builder)
+        //    {
+        //        builder.ToTable("ActivityLogs");
+        //        builder.HasKey(al => al.Id);
+        //        builder.HasOne(al => al.AppUser).WithMany(u => u.ActivityLogs).HasForeignKey(al => al.UserId).OnDelete(DeleteBehavior.Cascade);
+        //    }
+        //}
 
 
         public class EventConfiguration : IEntityTypeConfiguration<Event>
