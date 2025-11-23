@@ -19,8 +19,8 @@ namespace SchoolManagementSystem.Models
 		// =============================
 		// 📘 DbSet: 30+ Tables
 		// =============================
-		public DbSet<Role> Roles { get; set; } = default!;
-        public DbSet<User> Users { get; set; } = default!;
+		//public DbSet<Role> Roles { get; set; } = default!;
+  //      public DbSet<User> Users { get; set; } = default!;
         public DbSet<Student> Students { get; set; } = default!;
         public DbSet<Teacher> Teachers { get; set; } = default!;
         public DbSet<Class> Classes { get; set; } = default!;

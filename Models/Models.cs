@@ -336,7 +336,7 @@ namespace SchoolManagementSystem.Models
         [ForeignKey(nameof(Department))]
         public int DepartmentId { get; set; }
 
-        public Department Department { get; set; } = default!;
+        public Department? Department { get; set; } = default;
 
         public ICollection<Section> Sections { get; set; } = new HashSet<Section>();
         public ICollection<Student> Students { get; set; } = new HashSet<Student>();
