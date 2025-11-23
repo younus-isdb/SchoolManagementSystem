@@ -7,6 +7,10 @@ namespace SchoolManagementSystem.Models
         public string? ProfilePicture { get; set; }
     }
     public class AppRole : IdentityRole<Guid>
+
+
+
+        //test
     {
         public string? Description { get; set; }
     }
