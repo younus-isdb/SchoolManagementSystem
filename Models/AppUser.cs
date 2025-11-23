@@ -12,6 +12,7 @@ namespace SchoolManagementSystem.Models
 
         //test
     {
+
         public string? Description { get; set; }
     }
 }
