@@ -10,7 +10,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<SchoolDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddIdentity<User, Role>()
+builder.Services.AddIdentity<AppUser, AppRole>()
 			   .AddEntityFrameworkStores<SchoolDbContext>()
 			  ;
 builder.Services.AddFileUploader();

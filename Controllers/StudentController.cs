@@ -79,7 +79,7 @@ namespace SchoolManagementSystem.Controllers
         private async Task LoadViewBags()
         {
             var users = await _context.Users
-                .Select(u => new { u.UserId, u.Name })
+                .Select(u => new { u.Id, u.UserName })
                 .ToListAsync();
 
             var classes = await _context.Classes

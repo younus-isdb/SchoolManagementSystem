@@ -8,60 +8,60 @@ namespace SchoolManagementSystem.Models
 {
 
 
-    // -------------------------
-    // 1. Role
-    // -------------------------
-    [Index(nameof(RoleName), IsUnique = true)]
-	public class Role : IdentityRole<int>
-	{
-        [Key]
-        public int RoleId { get; set; }
+ //   // -------------------------
+ //   // 1. Role
+ //   // -------------------------
+ //   [Index(nameof(RoleName), IsUnique = true)]
+	//public class Role : IdentityRole<int>
+	//{
+ //       [Key]
+ //       public int RoleId { get; set; }
 
-        [Required, MaxLength(50)]
-        public string RoleName { get; set; } = default!;
+ //       [Required, MaxLength(50)]
+ //       public string RoleName { get; set; } = default!;
 
-        public ICollection<User> Users { get; set; } = new HashSet<User>();
-    }
+ //       public ICollection<User> Users { get; set; } = new HashSet<User>();
+ //   }
 
-    // -------------------------
-    // 2. User
-    // -------------------------
-    [Index(nameof(Email), IsUnique = true)]
-    public class User : IdentityUser<int>
-    {
-        [Key]
-        public int UserId { get; set; }
+ //   // -------------------------
+ //   // 2. User
+ //   // -------------------------
+ //   [Index(nameof(Email), IsUnique = true)]
+ //   public class User : IdentityUser<int>
+ //   {
+ //       [Key]
+ //       public int UserId { get; set; }
 
-        [Required, MaxLength(100)]
-        public string Name { get; set; } = default!;
+ //       [Required, MaxLength(100)]
+ //       public string Name { get; set; } = default!;
 
-        [Required, MaxLength(150)]
-        public string Email { get; set; } = default!;
+ //       [Required, MaxLength(150)]
+ //       public string Email { get; set; } = default!;
 
-        // In production don't store plain password — store hashed + salt
-        [Required, MaxLength(400)]
-        public string PasswordHash { get; set; } = default!;
+ //       // In production don't store plain password — store hashed + salt
+ //       [Required, MaxLength(400)]
+ //       public string PasswordHash { get; set; } = default!;
 
-        [ForeignKey(nameof(Role))]
-        public int RoleId { get; set; }
+ //       [ForeignKey(nameof(Role))]
+ //       public int RoleId { get; set; }
 
-        public bool Status { get; set; } = true;
+ //       public bool Status { get; set; } = true;
 
-        // Use DateTimeOffset and UTC
-        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+ //       // Use DateTimeOffset and UTC
+ //       public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
-        // Navigation
-        public Role Role { get; set; } = default!;
+ //       // Navigation
+ //       public Role Role { get; set; } = default!;
 
-        public ICollection<LoginLog> LoginLogs { get; set; } = new HashSet<LoginLog>();
-        public ICollection<ActivityLog> ActivityLogs { get; set; } = new HashSet<ActivityLog>();
+ //       public ICollection<LoginLog> LoginLogs { get; set; } = new HashSet<LoginLog>();
+ //       public ICollection<ActivityLog> ActivityLogs { get; set; } = new HashSet<ActivityLog>();
 
-        [InverseProperty(nameof(Message.Sender))]
-        public ICollection<Message> SentMessages { get; set; } = new HashSet<Message>();
+ //       [InverseProperty(nameof(Message.Sender))]
+ //       public ICollection<Message> SentMessages { get; set; } = new HashSet<Message>();
 
-        [InverseProperty(nameof(Message.Receiver))]
-        public ICollection<Message> ReceivedMessages { get; set; } = new HashSet<Message>();
-    }
+ //       [InverseProperty(nameof(Message.Receiver))]
+ //       public ICollection<Message> ReceivedMessages { get; set; } = new HashSet<Message>();
+ //   }
 
     // -------------------------
     // 3. Student
@@ -75,9 +75,9 @@ namespace SchoolManagementSystem.Models
         // -------------------------
         // Account / User Relation
         // -------------------------
-        [ForeignKey(nameof(User))]
-        public int UserId { get; set; }
-        public User User { get; set; } = default!;
+        [ForeignKey(nameof(AppUser))]
+        public Guid UserId { get; set; }
+        public AppUser AppUser { get; set; } = default!;
 
         // -------------------------
         // Names (Multilingual)
@@ -293,8 +293,8 @@ namespace SchoolManagementSystem.Models
         [Key]
         public int TeacherId { get; set; }
 
-        [ForeignKey(nameof(User))]
-        public int UserId { get; set; }
+        [ForeignKey(nameof(AppUser))]
+        public Guid UserId { get; set; }
 
         [ForeignKey(nameof(Department))]
         public int DepartmentId { get; set; }
@@ -308,7 +308,7 @@ namespace SchoolManagementSystem.Models
         public string? Designation { get; set; }
 
         // Navigation
-        public User User { get; set; } = default!;
+        public AppUser AppUser { get; set; } = default!;
         public Department Department { get; set; } = default!;
 
         public ICollection<ClassSubject> ClassSubjects { get; set; } = new HashSet<ClassSubject>();
@@ -639,8 +639,8 @@ namespace SchoolManagementSystem.Models
         [ForeignKey(nameof(Book))]
         public int BookId { get; set; }
 
-        [ForeignKey(nameof(User))]
-        public int IssuedTo { get; set; }
+        [ForeignKey(nameof(AppUser))]
+        public Guid IssuedTo { get; set; }
 
         public DateTimeOffset IssueDate { get; set; }
         public DateTimeOffset? ReturnDate { get; set; }
@@ -648,7 +648,7 @@ namespace SchoolManagementSystem.Models
         public decimal Fine { get; set; }
 
         public Book Book { get; set; } = default!;
-        public User User { get; set; } = default!;
+        public AppUser AppUser { get; set; } = default!;
     }
 
     // -------------------------
@@ -665,12 +665,12 @@ namespace SchoolManagementSystem.Models
         [Required, MaxLength(4000)]
         public string Content { get; set; } = default!;
 
-        [ForeignKey(nameof(Role))]
-        public int? VisibleToRoleId { get; set; } // nullable: if null visible to all
+        [ForeignKey(nameof(AppRole))]
+        public int VisibleToRoleId { get; set; } 
 
         public DateTimeOffset DatePosted { get; set; } = DateTimeOffset.UtcNow;
 
-        public Role? Role { get; set; } // navigation
+        public AppRole? AppRole { get; set; } // navigation
     }
 
     // -------------------------
@@ -792,11 +792,11 @@ namespace SchoolManagementSystem.Models
         [Key]
         public int MessageId { get; set; }
 
-        [ForeignKey(nameof(Sender))]
-        public int SenderId { get; set; }
+        //[ForeignKey(nameof(Sender))]
+        //public int SenderId { get; set; }
 
-        [ForeignKey(nameof(Receiver))]
-        public int ReceiverId { get; set; }
+        //[ForeignKey(nameof(Receiver))]
+        //public int ReceiverId { get; set; }
 
         [Required, MaxLength(2000)]
         public string Content { get; set; } = default!;
@@ -806,11 +806,11 @@ namespace SchoolManagementSystem.Models
         [MaxLength(50)]
         public string? Status { get; set; }
 
-        [InverseProperty(nameof(User.SentMessages))]
-        public User Sender { get; set; } = default!;
+        //[InverseProperty(nameof(AppUser.SentMessages))]
+        //public AppUser Sender { get; set; } = default!;
 
-        [InverseProperty(nameof(User.ReceivedMessages))]
-        public User Receiver { get; set; } = default!;
+        //[InverseProperty(nameof(AppUser.ReceivedMessages))]
+        //public AppUser Receiver { get; set; } = default!;
     }
 
     // -------------------------
@@ -821,15 +821,15 @@ namespace SchoolManagementSystem.Models
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey(nameof(User))]
-        public int UserId { get; set; }
+        [ForeignKey(nameof(AppUser))]
+        public Guid UserId { get; set; }
 
         public DateTimeOffset LoginTime { get; set; } = DateTimeOffset.UtcNow;
 
         [MaxLength(45)]
         public string? IpAddress { get; set; }
 
-        public User User { get; set; } = default!;
+        public AppUser AppUser { get; set; } = default!;
     }
 
     // -------------------------
@@ -840,8 +840,8 @@ namespace SchoolManagementSystem.Models
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey(nameof(User))]
-        public int UserId { get; set; }
+        [ForeignKey(nameof(AppUser))]
+        public Guid UserId { get; set; }
 
         [MaxLength(100)]
         public string ActionType { get; set; } = default!;
@@ -851,7 +851,7 @@ namespace SchoolManagementSystem.Models
 
         public DateTimeOffset Timestamp { get; set; } = DateTimeOffset.UtcNow;
 
-        public User User { get; set; } = default!;
+        public AppUser AppUser { get; set; } = default!;
     }
 
     // -------------------------
