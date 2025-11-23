@@ -628,6 +628,7 @@ namespace SchoolManagementSystem.Models
         public ICollection<IssuedBook> IssuedBooks { get; set; } = new HashSet<IssuedBook>();
     }
 
+
     // -------------------------
     // 18. IssuedBook
     // -------------------------
