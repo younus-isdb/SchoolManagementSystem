@@ -1,22 +1,7 @@
-﻿// =============================
-// FULL STUDENT ADMISSION MODULE
-// Includes:
-// ✔ Controller Action
-// ✔ ViewBag Data Load
-// ✔ Validation
-// ✔ Create Workflow
-// ✔ Photo Upload
-// ✔ Auto Roll Generator
-// ✔ QR Code ID Card Generation
-// =============================
-
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using QRCoder;
 using SchoolManagementSystem.Models;
-using System.Drawing;
-using System.Drawing.Imaging;
 
 namespace SchoolManagementSystem.Controllers
 {
@@ -31,115 +16,128 @@ namespace SchoolManagementSystem.Controllers
             _env = env;
         }
 
-        // ---------------------------
+        // ---------------------------------------------------
         // GET: Student/Create
-        // ---------------------------
+        // ---------------------------------------------------
         public async Task<IActionResult> Create()
         {
-            ViewBag.Users = new SelectList(await _context.Users.ToListAsync(), "UserId", "FullName");
-            ViewBag.Classes = new SelectList(await _context.Classes.ToListAsync(), "ClassId", "Name");
-            ViewBag.Sections = new SelectList(await _context.Sections.ToListAsync(), "SectionId", "Name");
-
+            await LoadDropdowns();
             return View();
         }
 
-        // ---------------------------
+        // ---------------------------------------------------
         // POST: Student/Create
-        // ---------------------------
+        // ---------------------------------------------------
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Student model, IFormFile Photo)
+        public async Task<IActionResult> Create(Student model,
+            IFormFile ProfileImage,
+            IFormFile DocumentFile)
         {
             if (!ModelState.IsValid)
             {
-                LoadViewBags();
+                await LoadDropdowns();
                 return View(model);
             }
 
-            // Auto Roll No Generator
+            // Auto Roll No
             model.RollNo = await GenerateRollNo(model.ClassId, model.SectionId);
 
-            // Save Student
             _context.Students.Add(model);
             await _context.SaveChangesAsync();
 
-            // Photo Upload
-            if (Photo != null)
-                await SaveStudentPhoto(model.StudentId, Photo);
+            // Profile Image Upload
+            if (ProfileImage != null)
+            {
+                model.ProfileImageUrl = await SaveFile(ProfileImage, "photos/students", model.StudentId + ".jpg");
+                await _context.SaveChangesAsync();
+            }
 
-            // Generate QR Code
-            await GenerateQrCode(model.StudentId);
+            // Document Upload
+            if (DocumentFile != null)
+            {
+                model.DocumentUrl = await SaveFile(DocumentFile, "documents/students", model.StudentId + "_doc.pdf");
+                await _context.SaveChangesAsync();
+            }
 
             return RedirectToAction("Details", new { id = model.StudentId });
         }
 
-        // ---------------------------
-        // Load ViewBags (Reusable)
-        // ---------------------------
-        private async Task LoadViewBags()
+        // ---------------------------------------------------
+        // AJAX: Get Classes by Department
+        // ---------------------------------------------------
+        public async Task<IActionResult> GetClasses(int departmentId)
         {
-            var users = await _context.Users
-                .Select(u => new { u.Id, u.UserName })
-                .ToListAsync();
-
             var classes = await _context.Classes
-                .Select(c => new { c.ClassId, c.ClassName })
+                .Where(c => c.DepartmentId == departmentId)
+                .Select(c => new { classId = c.ClassId, className = c.ClassName })
                 .ToListAsync();
 
-            var sections = await _context.Sections
-                .Select(s => new { s.SectionId, s.SectionName })
-                .ToListAsync();
-
-            ViewBag.Users = new SelectList(users, "UserId", "Name");
-            ViewBag.Classes = new SelectList(classes, "ClassId", "ClassName");
-            ViewBag.Sections = new SelectList(sections, "SectionId", "SectionName");
+            return Json(classes);
         }
 
-        // ---------------------------
+        // ---------------------------------------------------
+        // AJAX: Get Sections by Class
+        // ---------------------------------------------------
+        public async Task<IActionResult> GetSections(int classId)
+        {
+            var sections = await _context.Sections
+                .Where(s => s.ClassId == classId)
+                .Select(s => new { sectionId = s.SectionId, sectionName = s.SectionName })
+                .ToListAsync();
+
+            return Json(sections);
+        }
+
+        // ---------------------------------------------------
+        // Load Dropdown ViewBags
+        // ---------------------------------------------------
+        private async Task LoadDropdowns()
+        {
+            ViewBag.DepartmentList = new SelectList(
+                await _context.Departments.ToListAsync(),
+                "DepartmentId",
+                "DepartmentName");
+
+            ViewBag.ClassList = new SelectList(
+                await _context.Classes.ToListAsync(),
+                "ClassId",
+                "ClassName");
+
+            ViewBag.SectionList = new SelectList(
+                await _context.Sections.ToListAsync(),
+                "SectionId",
+                "SectionName");
+        }
+
+        // ---------------------------------------------------
         // Auto Roll Generator
-        // ---------------------------
+        // ---------------------------------------------------
         private async Task<string> GenerateRollNo(int classId, int sectionId)
         {
             int count = await _context.Students
                 .CountAsync(s => s.ClassId == classId && s.SectionId == sectionId);
 
-            return (count + 1).ToString("D3"); // Example: 001, 002
+            return (count + 1).ToString("D3"); // 001, 002, 003...
         }
 
-        // ---------------------------
-        // Photo Upload
-        // ---------------------------
-        private async Task SaveStudentPhoto(int studentId, IFormFile Photo)
+        // ---------------------------------------------------
+        // File Upload Helper
+        // ---------------------------------------------------
+        private async Task<string> SaveFile(IFormFile file, string folderName, string fileName)
         {
-            string folder = Path.Combine(_env.WebRootPath, "photos/students");
-            if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+            string folderPath = Path.Combine(_env.WebRootPath, folderName);
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
 
-            string filePath = Path.Combine(folder, studentId + ".jpg");
+            string filePath = Path.Combine(folderPath, fileName);
 
-            using var stream = new FileStream(filePath, FileMode.Create);
-            await Photo.CopyToAsync(stream);
-        }
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
 
-        // ---------------------------
-        // QR Code Generator
-        // ---------------------------
-        private async Task GenerateQrCode(int studentId)
-        {
-            string qrText = $"StudentID:{studentId}";
-
-            QRCodeGenerator qr = new QRCodeGenerator();
-            QRCodeData data = qr.CreateQrCode(qrText, QRCodeGenerator.ECCLevel.Q);
-            QRCode code = new QRCode(data);
-
-            Bitmap qrImage = code.GetGraphic(20);
-
-            string folder = Path.Combine(_env.WebRootPath, "qrcodes/students");
-            if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
-
-            string filePath = Path.Combine(folder, studentId + ".png");
-
-            qrImage.Save(filePath, ImageFormat.Png);
-            await Task.CompletedTask;
+            return $"/{folderName}/{fileName}";
         }
     }
 }

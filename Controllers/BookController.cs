@@ -34,7 +34,7 @@ namespace SchoolManagementSystem.Controllers
             {
                 return NotFound();
             }
-            var books = await _db.Books.FirstOrDefaultAsync(b => b.BookId == id);
+            var books = await _db.Books.Include(a => a.IssuedBooks).FirstOrDefaultAsync(b => b.BookId == id);
 
             if (books == null)
             {
@@ -104,21 +104,31 @@ namespace SchoolManagementSystem.Controllers
                 try
                 {
                     var exixtingbook = await _db.Books.FindAsync(id);
-                    if (exixtingbook != null)
+                    if (exixtingbook == null)
                     {
-                        var diff = book.TotalCopies - exixtingbook.TotalCopies;
-
-                        exixtingbook.Title = book.Title;
-                        exixtingbook.Author = book.Author;
-                        exixtingbook.ISBN = book.ISBN;
-                        exixtingbook.Category = book.Category;
-                        exixtingbook.TotalCopies = book.TotalCopies;
-                        exixtingbook.AvailableCopies = Math.Max(0, exixtingbook.AvailableCopies + diff);
-
-                        _db.Update(exixtingbook);
-                        await _db.SaveChangesAsync();
-
+                        return NotFound();
                     }
+
+                    var currentlyIssued = await _db.IssuedBooks.CountAsync(a => a.BookId == id && a.ReturnDate == null);
+
+                    if (book.TotalCopies < currentlyIssued)
+                    {
+                        ModelState.AddModelError("TotalCopies",
+                $"Cannot reduce total copies to {book.TotalCopies}. There are {currentlyIssued} copies currently issued.");
+                        return View(book);
+                    }
+
+                    var diff = book.TotalCopies - exixtingbook.TotalCopies;
+
+                    exixtingbook.Title = book.Title;
+                    exixtingbook.Author = book.Author;
+                    exixtingbook.ISBN = book.ISBN;
+                    exixtingbook.Category = book.Category;
+                    exixtingbook.TotalCopies = book.TotalCopies;
+                    exixtingbook.AvailableCopies = Math.Max(0, exixtingbook.AvailableCopies + diff);
+
+                    _db.Update(exixtingbook);
+                    await _db.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
@@ -147,12 +157,12 @@ namespace SchoolManagementSystem.Controllers
         // GET: BookController/Delete/5
         public async Task<ActionResult> Delete(int id)
         {
-            if (id<=0)
+            if (id <= 0)
             {
                 return NotFound();
             }
-            var book = await _db.Books.FirstOrDefaultAsync(b => b.BookId == id);
-            if (book==null)
+            var book = await _db.Books.Include(b => b.IssuedBooks).FirstOrDefaultAsync(b => b.BookId == id);
+            if (book == null)
             {
                 return NotFound();
             }
@@ -166,25 +176,31 @@ namespace SchoolManagementSystem.Controllers
         {
             try
             {
-                var book = await _db.Books.FindAsync(id);
+                var book = await _db.Books.
+                    Include(b => b.IssuedBooks).FirstOrDefaultAsync(b => b.BookId == id);
                 if (book == null)
                 {
                     return NotFound();
                 }
 
-                bool hasActBorrow = await CheckForActiveBorrowings(id);
-
-                if (hasActBorrow)
+                bool hasActIssued = book.IssuedBooks.Any(a => a.ReturnDate == null);
+                if (hasActIssued)
                 {
-                    ModelState.AddModelError("", "Cannot delete book with active borrowings.");
-                    return View(book);
+                    ModelState.AddModelError("", "Cannot delete book. There are active issued copies that haven't been returned yet.");
+                    return View("Delete", book);
                 }
 
                 _db.Books.Remove(book);
                 await _db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-           
+
+            catch (DbUpdateException ex)
+            {
+                ModelState.AddModelError("", "Unable to delete book. It may have related records in the system.");
+                return View("Delete", await _db.Books.FindAsync(id));
+            }
+
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "An error occurred while deleting the book.");
@@ -192,9 +208,9 @@ namespace SchoolManagementSystem.Controllers
             }
         }
 
-        private async Task<bool> CheckForActiveBorrowings(int bookId)
+        private bool BookExists(int id)
         {
-            return false;
+            return  _db.Books.Any(a => a.BookId == id);
         }
     }
 }

@@ -12,13 +12,49 @@ namespace SchoolManagementSystem.Controllers
         {
             _context = context;
         }
+        // 🔥 Modal Load Action
+        [HttpGet]
+        public IActionResult CreateModal()
+        {
+            return PartialView("_DepartmentCreatePartial", new Department());
+        }
+
+        // 🔥 POST: Create Department
+        [HttpPost]
+        public IActionResult Create(Department model)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Departments.Add(model);
+                _context.SaveChanges();
+                return Json(new { success = true });
+            }
+
+            return PartialView("_DepartmentCreatePartial", model);
+        }
+
+        // 🔥 Dropdown Refresh এর জন্য API
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var list = _context.Departments
+                .Select(d => new { d.DepartmentId, d.DepartmentName })
+                .ToList();
+
+            return Json(list);
+        }
 
         // GET: Department
         public async Task<IActionResult> Index()
         {
-            var departments = await _context.Departments.ToListAsync();
+            var departments = await _context.Departments
+                .Include(d => d.Classes)
+                .Include(d => d.Teachers)
+                .ToListAsync();
+
             return View(departments);
         }
+
 
         // GET: Department/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -41,19 +77,19 @@ namespace SchoolManagementSystem.Controllers
             return View();
         }
 
-        // POST: Department/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Department department)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(department);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(department);
-        }
+        //// POST: Department/Create
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create(Department department)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        _context.Add(department);
+        //        await _context.SaveChangesAsync();
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    return View(department);
+        //}
 
         // GET: Department/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -121,5 +157,7 @@ namespace SchoolManagementSystem.Controllers
         {
             return _context.Departments.Any(d => d.DepartmentId == id);
         }
+
+
     }
 }

@@ -12,8 +12,8 @@ using SchoolManagementSystem.Models;
 namespace SchoolManagementSystem.Migrations
 {
     [DbContext(typeof(SchoolDbContext))]
-    [Migration("20251123130721_fix")]
-    partial class fix
+    [Migration("20251124155623_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -941,6 +941,9 @@ namespace SchoolManagementSystem.Migrations
                     b.Property<DateTimeOffset>("DOB")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
                     b.Property<string>("DocumentUrl")
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
@@ -1045,6 +1048,8 @@ namespace SchoolManagementSystem.Migrations
                     b.HasIndex("ClassId");
 
                     b.HasIndex("ClassId1");
+
+                    b.HasIndex("DepartmentId");
 
                     b.HasIndex("RollNo")
                         .IsUnique();
@@ -1625,6 +1630,12 @@ namespace SchoolManagementSystem.Migrations
                         .WithMany("Students")
                         .HasForeignKey("ClassId1");
 
+                    b.HasOne("SchoolManagementSystem.Models.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("SchoolManagementSystem.Models.Section", "Section")
                         .WithMany()
                         .HasForeignKey("SectionId")
@@ -1644,6 +1655,8 @@ namespace SchoolManagementSystem.Migrations
                     b.Navigation("AppUser");
 
                     b.Navigation("Class");
+
+                    b.Navigation("Department");
 
                     b.Navigation("Section");
                 });

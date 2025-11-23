@@ -95,6 +95,10 @@ namespace SchoolManagementSystem.Models
         // -------------------------
         // Academic Position
         // -------------------------
+        [ForeignKey(nameof(Department))]
+        public int DepartmentId { get; set; }
+        public Department Department { get; set; } = default!;
+
         [ForeignKey(nameof(Class))]
         public int ClassId { get; set; }
         public Class Class { get; set; } = default!;
@@ -627,6 +631,7 @@ namespace SchoolManagementSystem.Models
 
         public ICollection<IssuedBook> IssuedBooks { get; set; } = new HashSet<IssuedBook>();
     }
+
 
     // -------------------------
     // 18. IssuedBook

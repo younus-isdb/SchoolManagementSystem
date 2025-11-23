@@ -1,225 +1,255 @@
 ﻿@model Student
-
 @{
     ViewData["Title"] = "Create Student";
 }
 
-<h2 class="mb-4">Create Student</h2>
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: white;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        margin-bottom: 25px;
+    }
+
+    .card-custom {
+        border-radius: 16px;
+        padding: 20px;
+        background: #ffffff;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        margin-bottom: 25px;
+    }
+
+    .section-title {
+        font-weight: 700;
+        font-size: 20px;
+        color: #444;
+        margin-bottom: 12px;
+        border-left: 5px solid #6a11cb;
+        padding-left: 8px;
+    }
+
+    label {
+        font-weight: 600;
+        margin-top: 8px;
+    }
+
+    .btn-primary {
+        background: #6a11cb;
+        border: none;
+        font-weight: 600;
+        padding: 10px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .btn-primary:hover {
+        background: #5b0fb8;
+    }
+
+    .btn-secondary {
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .gradient-box {
+        background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+        padding: 15px;
+        border-radius: 14px;
+        color: #333;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+</style>
+
+<div class="page-header">
+    <h2><i class="bi bi-person-plus-fill"></i> Create Student</h2>
+</div>
 
 <form asp-action="Create" method="post" enctype="multipart/form-data">
 
-    <div class="row">
-
-        <!-- Basic Info -->
-        <div class="col-md-6">
-            <h4>Basic Information</h4>
-            <hr />
-
-            <div class="form-group">
+    <!-- Basic Information Card -->
+    <div class="card-custom">
+        <div class="section-title">Basic Information</div>
+        <div class="row">
+            <div class="col-md-6">
                 <label asp-for="StudentName"></label>
                 <input asp-for="StudentName" class="form-control" />
                 <span asp-validation-for="StudentName" class="text-danger"></span>
-            </div>
 
-            <div class="form-group">
                 <label asp-for="ArabicStudentName"></label>
                 <input asp-for="ArabicStudentName" class="form-control" />
-            </div>
 
-            <div class="form-group">
                 <label asp-for="BanglaStudentName"></label>
                 <input asp-for="BanglaStudentName" class="form-control" />
             </div>
 
-            <div class="form-group">
+            <div class="col-md-6">
                 <label asp-for="RollNo"></label>
                 <input asp-for="RollNo" class="form-control" />
-                <span asp-validation-for="RollNo" class="text-danger"></span>
-            </div>
 
-            <div class="form-group">
                 <label asp-for="AdmissionNumber"></label>
                 <input asp-for="AdmissionNumber" class="form-control" />
-            </div>
 
-            <div class="form-group">
                 <label asp-for="NationalId"></label>
                 <input asp-for="NationalId" class="form-control" />
             </div>
         </div>
+    </div>
 
-        <!-- Academic Info -->
-        <div class="col-md-6">
-            <h4>Academic Information</h4>
-            <hr />
 
-            <div class="form-group">
-                <label asp-for="ClassId">Class</label>
-                <select asp-for="ClassId" asp-items="ViewBag.ClassList" class="form-control"></select>
+    <!-- Academic Info -->
+    <div class="card-custom">
+        <div class="section-title">Academic Information</div>
+        <div class="row">
+            <div class="col-md-4">
+                <label>Department</label>
+                <select asp-for="DepartmentId" asp-items="ViewBag.DepartmentList" class="form-control" id="DepartmentId"></select>
             </div>
 
-            <div class="form-group">
-                <label asp-for="SectionId">Section</label>
-                <select asp-for="SectionId" asp-items="ViewBag.SectionList" class="form-control"></select>
+            <div class="col-md-4">
+                <label>Class</label>
+                <select asp-for="ClassId" asp-items="ViewBag.ClassList" class="form-control" id="ClassId"></select>
             </div>
 
-            <div class="form-group">
-                <label asp-for="AdmissionDate"></label>
-                <input asp-for="AdmissionDate" type="date" class="form-control" />
+            <div class="col-md-4">
+                <label>Section</label>
+                <select asp-for="SectionId" asp-items="ViewBag.SectionList" class="form-control" id="SectionId"></select>
             </div>
-
-            <div class="form-group">
-                <label asp-for="PreviousSchoolName"></label>
-                <input asp-for="PreviousSchoolName" class="form-control" />
-            </div>
-
-            <div class="form-group">
-                <label asp-for="PreviousGPA"></label>
-                <input asp-for="PreviousGPA" class="form-control" />
-            </div>
-
         </div>
     </div>
 
-    <hr />
 
-    <!-- Personal Info -->
-    <h4>Personal Information</h4>
-    <div class="row">
-        <div class="col-md-4">
-
-            <div class="form-group">
+    <!-- Personal Information -->
+    <div class="card-custom">
+        <div class="section-title">Personal Information</div>
+        <div class="row">
+            <div class="col-md-4">
                 <label asp-for="Gender"></label>
                 <select asp-for="Gender" class="form-control">
                     <option value="">Select Gender</option>
                     <option value="0">Male</option>
                     <option value="1">Female</option>
                 </select>
-            </div>
 
-            <div class="form-group">
                 <label asp-for="DOB"></label>
                 <input asp-for="DOB" type="date" class="form-control" />
-            </div>
 
-            <div class="form-group">
                 <label asp-for="BloodGroup"></label>
                 <input asp-for="BloodGroup" class="form-control" />
             </div>
 
-        </div>
-
-        <div class="col-md-4">
-            <h5>Father Info</h5>
-
-            <div class="form-group">
+            <div class="col-md-4">
+                <div class="gradient-box"><b>Father Information</b></div>
                 <label asp-for="FatherName"></label>
                 <input asp-for="FatherName" class="form-control" />
-            </div>
 
-            <div class="form-group">
                 <label asp-for="FatherPhone"></label>
                 <input asp-for="FatherPhone" class="form-control" />
             </div>
-        </div>
 
-        <div class="col-md-4">
-            <h5>Mother Info</h5>
-
-            <div class="form-group">
+            <div class="col-md-4">
+                <div class="gradient-box"><b>Mother Information</b></div>
                 <label asp-for="MotherName"></label>
                 <input asp-for="MotherName" class="form-control" />
-            </div>
 
-            <div class="form-group">
                 <label asp-for="MotherPhone"></label>
                 <input asp-for="MotherPhone" class="form-control" />
             </div>
         </div>
     </div>
 
-    <hr />
 
-    <!-- Guardian -->
-    <h4>Guardian Information</h4>
-    <div class="row">
-        <div class="col-md-4">
-            <div class="form-group">
+    <!-- Guardian & Address -->
+    <div class="card-custom">
+        <div class="section-title">Guardian Information & Address</div>
+        <div class="row">
+            <div class="col-md-4">
                 <label asp-for="GuardianName"></label>
                 <input asp-for="GuardianName" class="form-control" />
-            </div>
 
-            <div class="form-group">
                 <label asp-for="GuardianPhone"></label>
                 <input asp-for="GuardianPhone" class="form-control" />
-            </div>
 
-            <div class="form-group">
                 <label asp-for="GuardianEmail"></label>
                 <input asp-for="GuardianEmail" class="form-control" />
             </div>
-        </div>
 
-        <div class="col-md-4">
-
-            <div class="form-group">
+            <div class="col-md-4">
                 <label asp-for="Address"></label>
                 <textarea asp-for="Address" class="form-control"></textarea>
-            </div>
 
-            <div class="form-group">
                 <label asp-for="City"></label>
                 <input asp-for="City" class="form-control" />
-            </div>
 
-            <div class="form-group">
                 <label asp-for="Country"></label>
                 <input asp-for="Country" class="form-control" />
             </div>
-        </div>
 
-        <div class="col-md-4">
-            <h5>Emergency</h5>
-            <div class="form-group">
+            <div class="col-md-4">
+                <div class="gradient-box"><b>Emergency Contact</b></div>
                 <label asp-for="EmergencyContactName"></label>
                 <input asp-for="EmergencyContactName" class="form-control" />
-            </div>
 
-            <div class="form-group">
                 <label asp-for="EmergencyPhone"></label>
                 <input asp-for="EmergencyPhone" class="form-control" />
-            </div>
 
-            <div class="form-group">
                 <label asp-for="MedicalNotes"></label>
                 <textarea asp-for="MedicalNotes" class="form-control"></textarea>
             </div>
         </div>
     </div>
 
-    <hr />
 
-    <!-- Media -->
-    <h4>Media / Documents</h4>
+    <!-- Media Upload -->
+    <div class="card-custom">
+        <div class="section-title">Media & Documents</div>
 
-    <div class="form-group">
-        <label asp-for="ProfileImageUrl">Profile Image</label>
+        <label>Profile Image</label>
         <input type="file" name="ProfileImage" class="form-control" />
-    </div>
 
-    <div class="form-group">
-        <label asp-for="DocumentUrl">Document (PDF / Image)</label>
+        <label>Document (PDF / Image)</label>
         <input type="file" name="DocumentFile" class="form-control" />
     </div>
 
-    <hr />
-
-    <!-- Submit -->
-    <button type="submit" class="btn btn-primary">Create</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-
+    <button type="submit" class="btn btn-primary">Create Student</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
 </form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Load classes when department changes
+        $("#DepartmentId").change(function () {
+            var deptId = $(this).val();
+
+            $.get('/Student/GetClasses', { departmentId: deptId }, function (data) {
+                $("#ClassId").empty().append('<option value="">Select Class</option>');
+                $.each(data, function (i, c) {
+                    $("#ClassId").append('<option value="' + c.classId + '">' + c.className + '</option>');
+                });
+
+                $("#SectionId").empty().append('<option value="">Select Section</option>');
+            });
+        });
+
+        // Load sections when class changes
+        $("#ClassId").change(function () {
+            var classId = $(this).val();
+
+            $.get('/Student/GetSections', { classId: classId }, function (data) {
+                $("#SectionId").empty().append('<option value="">Select Section</option>');
+                $.each(data, function (i, s) {
+                    $("#SectionId").append('<option value="' + s.sectionId + '">' + s.sectionName + '</option>');
+                });
+            });
+        });
+    </script>
 }
