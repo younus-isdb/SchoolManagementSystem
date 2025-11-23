@@ -8,7 +8,7 @@ using SchoolManagementSystem.ViewModels;
 namespace SchoolManagementSystem.Controllers
 {
 
-    public class AccountController(SignInManager<User> signInManager, UserManager<User> userManager, ILogger<AccountController> logger) : Controller
+    public class AccountController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, ILogger<AccountController> logger) : Controller
     {
 
 
@@ -72,7 +72,7 @@ namespace SchoolManagementSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                var newUser = new User()
+                var newUser = new AppUser()
                 {
                     UserName = model.UserName,
                     Email = model.UserName
