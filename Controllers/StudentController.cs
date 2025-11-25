@@ -44,7 +44,7 @@ namespace SchoolManagementSystem.Controllers
             model.RollNo = await GenerateRollNo(model.ClassId, model.SectionId);
 
             _context.Students.Add(model);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); // প্রথমে StudentId পাবার জন্য সেভ
 
             // Profile Image Upload
             if (ProfileImage != null)
@@ -138,6 +138,37 @@ namespace SchoolManagementSystem.Controllers
             }
 
             return $"/{folderName}/{fileName}";
+        }
+
+        // ---------------------------------------------------
+        // GET: Student/Details/5
+        // ---------------------------------------------------
+        public async Task<IActionResult> Details(int id)
+        {
+            var student = await _context.Students
+                .Include(s => s.Department)
+                .Include(s => s.Class)
+                .Include(s => s.Section)
+                .FirstOrDefaultAsync(m => m.StudentId == id);
+
+            if (student == null)
+                return NotFound();
+
+            return View(student);
+        }
+
+        // ---------------------------------------------------
+        // GET: Student/Index
+        // ---------------------------------------------------
+        public async Task<IActionResult> Index()
+        {
+            var students = await _context.Students
+                .Include(s => s.Department)
+                .Include(s => s.Class)
+                .Include(s => s.Section)
+                .ToListAsync();
+
+            return View(students);
         }
     }
 }
