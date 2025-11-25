@@ -12,6 +12,21 @@ public class ClassController : Controller
 	{
 		_context = context;
 	}
+	[HttpPost]
+	public async Task<IActionResult> CreateFromModal(Class model)
+	{
+		if (ModelState.IsValid)
+		{
+			_context.Classes.Add(model);
+			await _context.SaveChangesAsync();
+
+			return Json(new { success = true });
+		}
+
+		// validation fail হলে আবার partial return
+		return PartialView("_CreateClassModal", model);
+	}
+
 
 	// GET: Class
 	public async Task<IActionResult> Index()

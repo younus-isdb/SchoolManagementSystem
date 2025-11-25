@@ -113,19 +113,58 @@
 		<div class="section-title">Academic Information</div>
 		<div class="row">
 			<div class="col-md-4">
-				<label>Department</label>
-				<select asp-for="DepartmentId" asp-items="ViewBag.DepartmentList" class="form-control" id="DepartmentId"></select>
+				<label asp-for="DepartmentId"></label>
+
+				<div class="input-group">
+					<select asp-for="DepartmentId"
+							asp-items="ViewBag.DepartmentList"
+							class="form-control">
+						<option value="">-- Select Department --</option>
+					</select>
+
+					<!-- + Button -->
+					<button type="button"
+							class="btn btn-success"
+							data-bs-toggle="modal"
+							data-bs-target="#departmentModal">
+						+
+					</button>
+				</div>
+
+				<span asp-validation-for="DepartmentId" class="text-danger"></span>
 			</div>
 
 			<div class="col-md-4">
 				<label>Class</label>
-				<select asp-for="ClassId" asp-items="ViewBag.ClassList" class="form-control" id="ClassId"></select>
+				<div class="input-group">
+					<select asp-for="ClassId" asp-items="ViewBag.ClassList" class="form-control" id="ClassId">
+						<option value="">Select Class</option>
+					</select>
+
+					<button type="button" class="btn btn-success"
+							data-bs-toggle="modal"
+							data-bs-target="#classModal">
+						+
+					</button>
+				</div>
 			</div>
+
 
 			<div class="col-md-4">
 				<label>Section</label>
-				<select asp-for="SectionId" asp-items="ViewBag.SectionList" class="form-control" id="SectionId"></select>
+				<div class="input-group">
+					<select asp-for="SectionId" asp-items="ViewBag.SectionList" class="form-control" id="SectionId">
+						<option value="">Select Section</option>
+					</select>
+
+					<button type="button" class="btn btn-success"
+							data-bs-toggle="modal"
+							data-bs-target="#sectionModal">
+						+
+					</button>
+				</div>
 			</div>
+
 			<!-- Academic History -->
 			<div class="col-md-8 mb-3">
 				<label asp-for="PreviousSchoolName" class="form-label fw-bold">Previous School Name</label>
@@ -257,10 +296,130 @@
 		</button>
 	</div>
 </form>
+<!-- 🔥 Bootstrap Modal for Department Create -->
+<div class="modal fade" id="departmentModal" tabindex="-1">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Create Department</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+			</div>
+
+			<div class="modal-body" id="departmentModalBody">
+				<!-- AJAX দ্বারা Department Create Form লোড হবে -->
+				Loading...
+			</div>
+		</div>
+	</div>
+</div>
+@* Class Create Modal *@
+<div class="modal fade" id="classModal" tabindex="-1">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Create Class</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+			</div>
+
+			<div class="modal-body" id="classModalBody">
+				Loading...
+			</div>
+		</div>
+	</div>
+</div>
+
+@* //Section Create Modal *@
+<div class="modal fade" id="sectionModal" tabindex="-1">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Create Section</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+			</div>
+
+			<div class="modal-body" id="sectionModalBody">
+				Loading...
+			</div>
+		</div>
+	</div>
+</div>
+
+
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+	<script>
+		// 🚀 Modal ওপেন হবার সাথে সাথে AJAX দিয়ে Create Dept Form লোড
+		$('#departmentModal').on('show.bs.modal', function () {
+			$("#departmentModalBody").load('/Department/CreateModal');
+		});
 
+		// 🚀 Class Modal → Load Create Form
+		$('#classModal').on('show.bs.modal', function () {
+			$("#classModalBody").load('/Class/CreateModal');
+		});
+
+
+
+
+
+				function OpenClassCreateModal() {
+			$("#classFormBody").load("/Class/CreateForm", function () {
+				$("#classModal").modal("show");
+			});
+		}
+
+		function OpenDeptCreateModal() {
+			$("#deptFormBody").load("/Department/CreateForm", function () {
+				$("#deptModal").modal("show");
+			});
+		}
+
+
+		// 🚀 Section Modal → Load Create Form
+		$('#sectionModal').on('show.bs.modal', function () {
+			$("#sectionModalBody").load('/Section/CreateModal');
+		});
+
+
+
+
+		// 🚀 Department তৈরি হওয়ার পর select list রিফ্রেশ
+		function RefreshDepartmentList() {
+			$.get('/Department/GetAll', function (data) {
+				let ddl = $('#DepartmentId');
+				ddl.empty();
+				ddl.append('<option value="">-- Select Department --</option>');
+				$.each(data, function (i, dept) {
+					ddl.append(`<option value="${dept.departmentId}">${dept.departmentName}</option>`);
+				});
+			});
+		}
+
+
+				function RefreshClassList(departmentId) {
+			$.get('/Student/GetClasses', { departmentId: departmentId }, function (data) {
+				let ddl = $("#ClassId");
+				ddl.empty().append('<option value="">Select Class</option>');
+
+				$.each(data, function (i, c) {
+					ddl.append(`<option value="${c.classId}">${c.className}</option>`);
+				});
+			});
+		}
+
+		function RefreshSectionList(classId) {
+			$.get('/Student/GetSections', { classId: classId }, function (data) {
+				let ddl = $("#SectionId");
+				ddl.empty().append('<option value="">Select Section</option>');
+
+				$.each(data, function (i, s) {
+					ddl.append(`<option value="${s.sectionId}">${s.sectionName}</option>`);
+				});
+			});
+		}
+
+	</script>
 	<script>
 		// Load classes when department changes
 		$("#DepartmentId").change(function () {
