@@ -5,125 +5,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Halishahar Islamia Madrasah</title>
 
-    <!-- Bootstrap 5 -->
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Tailwind (optional modern utility) -->
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        /* Islamic Madrasah Theme */
         body {
             background-color: #f9f9f9;
             font-family: 'Segoe UI', sans-serif;
         }
 
-        .navbar, .sidebar {
-            background-color: #1e5128; /* Dark Green */
-            color: #FFD700; /* Gold */
+        .sidebar {
+            width: 260px;
+            min-height: 100vh;
+            background-color: #1e5128;
+            color: #FFD700;
         }
 
             .sidebar a {
                 color: #FFD700;
+                text-decoration: none;
+                padding: 10px 15px;
+                display: block;
             }
+
+                .sidebar a:hover,
+                .sidebar .nav-link.active {
+                    background-color: #14531d;
+                    color: #fff !important;
+                    border-radius: 8px;
+                }
 
         .card {
             border-radius: 1rem;
             box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
         }
 
-            .card h5 {
-                color: #1e5128;
-            }
-
         .chart-container {
             height: 300px;
         }
 
-        /* Mobile Responsive Sidebar */
+        /* Mobile Responsive */
         @@media (max-width: 992px) {
             .sidebar {
-                position: relative;
                 width: 100%;
                 height: auto;
+                position: relative;
             }
         }
     </style>
 </head>
 <body>
     <div class="d-flex">
+
         <!-- Sidebar -->
-        <nav class="sidebar p-3 flex-shrink-0">
-            <h3 class="text-center">HIMM Dashboard</h3>
-            <ul class="nav flex-column mt-4">
-                @* Role-based Menu *@
+        <nav class="sidebar p-3">
+            <h3 class="text-center mb-4">HIMM Dashboard</h3>
+
+            <ul class="nav flex-column">
+
                 @if (User.IsInRole("Admin"))
                 {
-                    <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Student" asp-action="Index">Students</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Teacher" asp-action="Index">Teachers</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Class" asp-action="Index">Classes</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Subject" asp-action="Index">Subjects</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Exam" asp-action="Index">Exams</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="IssuedBook" asp-action="Index">IssuedBook</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="IssuedBook" asp-action="Index">Issued Book</a></li>
                 }
+
                 @if (User.IsInRole("Teacher"))
                 {
                     <li class="nav-item"><a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Assignments" asp-action="MyAssignments">My Assignments</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Attendance" asp-action="Mark">Mark Attendance</a></li>
                 }
+
                 @if (User.IsInRole("Student"))
                 {
                     <li class="nav-item"><a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Assignments" asp-action="MyAssignments">Assignments</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Exams" asp-action="MyResults">Exam Results</a></li>
                 }
+
             </ul>
         </nav>
 
         <!-- Main Content -->
-        <div class="flex-grow-1 p-4">
-            @*  <nav class="navbar mb-4"> *@
-            @*   <span class="navbar-brand">Halishahar Islamia Madrasah</span> *@
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm text-light border-bottom box-shadow mb-3">
+        <div class="flex-grow-1">
 
+            <nav class="navbar navbar-expand-sm navbar-dark border-bottom box-shadow mb-3" style="background:#1e5128;">
                 <div class="container-fluid">
-                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Halishahar Islamia Madrasah</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
+                    <a class="navbar-brand text-light" asp-controller="Home" asp-action="Index">
+                        Halishahar Islamia Madrasah
+                    </a>
+
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    @* <a class="btn btn-warning btn-sm" asp-controller="Account" asp-action="Login">Login</a> *@
+
+                    <div class="d-flex ms-auto text-light">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <span class="me-3">Hello, @User.Identity.Name</span>
+                            <a class="btn btn-warning btn-sm" asp-controller="Account" asp-action="Logout">Logout</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-warning btn-sm" asp-controller="Account" asp-action="Login">Login</a>
+                        }
+                    </div>
                 </div>
-                @*  <div class="d-flex ms-auto">
-                    <span class="text-white me-3">Hello, @User.Identity.Name</span>
-                    <a class="btn btn-warning btn-sm" asp-controller="Account" asp-action="Logout">Logout</a>
-                </div> *@
             </nav>
 
-            <main role="main" class="container-fluid">
+            <main class="container-fluid p-3">
                 @RenderBody()
             </main>
         </div>
-    </div>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    @RenderSection("Scripts", required: false)
+    </div>
 
     <footer class="bg-dark text-white py-3 mt-5">
         <div class="container">
             @await Component.InvokeAsync("FooterLatestItems", new { count = 5 })
         </div>
     </footer>
-</body>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
 </html>
