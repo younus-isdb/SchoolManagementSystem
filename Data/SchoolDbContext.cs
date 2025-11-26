@@ -341,17 +341,23 @@ namespace SchoolManagementSystem.Models
             }
         }
 
-        public class BookConfiguration : IEntityTypeConfiguration<Book>
-        {
-            public void Configure(EntityTypeBuilder<Book> builder)
-            {
-                builder.ToTable("Books");
-                builder.HasKey(b => b.BookId);
-                builder.Property(b => b.Title).IsRequired().HasMaxLength(250);
-            }
-        }
+	public class BookConfiguration : IEntityTypeConfiguration<Book>
+	{
+		public void Configure(EntityTypeBuilder<Book> builder)
+		{
+			builder.ToTable("Books");
+			builder.HasKey(b => b.BookId);
+			builder.Property(b => b.Title)
+				.IsRequired()
+				.HasMaxLength(250);
 
-        public class IssuedBookConfiguration : IEntityTypeConfiguration<IssuedBook>
+		
+			builder.HasIndex(b => b.Title)
+				.IsUnique();
+		}
+	}
+
+	public class IssuedBookConfiguration : IEntityTypeConfiguration<IssuedBook>
         {
             public void Configure(EntityTypeBuilder<IssuedBook> builder)
             {

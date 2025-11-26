@@ -10,7 +10,7 @@ public class ClassController : Controller
 
 	public ClassController(SchoolDbContext context)
 	{
-		_context = context;
+		_context = context;  //meem
 	}
 	[HttpPost]
 	public async Task<IActionResult> CreateFromModal(Class model)
