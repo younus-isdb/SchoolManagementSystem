@@ -347,12 +347,16 @@ namespace SchoolManagementSystem.Models
 		{
 			builder.ToTable("Books");
 			builder.HasKey(b => b.BookId);
+
 			builder.Property(b => b.Title)
 				.IsRequired()
 				.HasMaxLength(250);
 
-		
-			builder.HasIndex(b => b.Title)
+			builder.Property(b => b.Category)
+				.HasMaxLength(100);
+
+			// Create composite unique index on Title and Category
+			builder.HasIndex(b => new { b.Title, b.Category })
 				.IsUnique();
 		}
 	}

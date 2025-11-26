@@ -49,33 +49,36 @@ namespace SchoolManagementSystem.Controllers
             return View();
         }
 
-        // POST: BookController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(Book book)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    book.AvailableCopies = book.TotalCopies;
-                    _db.Books.Add(book);
-                    await _db.SaveChangesAsync();
+		// POST: BookController/Create
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<ActionResult> Create(Book book)
+		{
+			if (!ModelState.IsValid)
+				return View(book);
 
-                    return RedirectToAction(nameof(Index));
-                }
-                return View(book);
-            }
+			try
+			{
+				book.AvailableCopies = book.TotalCopies;
+				_db.Books.Add(book);
+				await _db.SaveChangesAsync();
 
-            catch
-            {
-                ModelState.AddModelError("", "Unable to save changes. Please try again.");
-                return View();
-            }
-        }
+				return RedirectToAction(nameof(Index));
+			}
+			catch (DbUpdateException ex)
+			{
+				ModelState.AddModelError("", "A book with the same title already exists in this category.");
+				return View(book);
+			}
+			catch (Exception ex)
+			{
+				ModelState.AddModelError("", "An error occurred while saving the book. Please try again.");
+				return View(book);
+			}
+		}
 
-        // GET: BookController/Edit/5
-        public async Task<ActionResult> Edit(int id)
+		// GET: BookController/Edit/5
+		public async Task<ActionResult> Edit(int id)
         {
             if (id <= 0)
             {
