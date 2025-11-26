@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.Models;
 using SchoolManagementSystem.Services;
+using System.Drawing.Drawing2D;
 
 namespace SchoolManagementSystem.Controllers
 {
@@ -43,58 +44,127 @@ namespace SchoolManagementSystem.Controllers
             return View(issued);
         }
 
-        // // GET: IssuedBookController/Create
+        // GET: IssuedBookController/Create
         public async Task<IActionResult> Create()
         {
             ViewBag.Books = await _db.Books.Where(b => b.AvailableCopies > 0).ToListAsync();
-            ViewBag.User = await _db.Users.ToListAsync();
+            ViewBag.BookCount = 1;
             return View();
         }
 
         // POST: IssuedBookController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IssuedBook issuedBook)
+        public async Task<IActionResult> Create(string operation, int bookCount, string UserSearch, string UserType,
+            string Class, string Section, int? RollNumber, List<int> BookIds)
         {
-            try
+            ViewBag.Books = await _db.Books.Where(b => b.AvailableCopies > 0).ToListAsync();
+            ViewBag.BookCount = bookCount;
+            ViewBag.UserSearch = UserSearch;
+            ViewBag.UserType = UserType;
+            ViewBag.Class = Class;
+            ViewBag.Section = Section;
+            ViewBag.RollNumber = RollNumber;
+
+            // Handle different operations
+            if (operation == "searchuser")
+            {
+                // Verify user exists
+                if (!string.IsNullOrEmpty(UserSearch))
+                {
+                    var user = await _db.Users
+                        .Where(u => u.UserName == UserSearch || u.NormalizedUserName == UserSearch.ToUpper())
+                        .FirstOrDefaultAsync();
+
+                    ViewBag.UserVerified = user != null;
+                }
+                return View();
+            }
+
+            if (operation == "add")
+            {
+                bookCount++;
+                ViewBag.BookCount = bookCount;
+                return View();
+            }
+
+            if (operation.StartsWith("delete-"))
+            {
+                int.TryParse(operation.Replace("delete-", ""), out int index);
+                if (index >= 0 && bookCount > 1)
+                {
+                    bookCount--;
+                    ViewBag.BookCount = bookCount;
+                }
+                return View();
+            }
+
+            // Handle final submission
+            if (operation == "submit")
             {
                 if (ModelState.IsValid)
                 {
-                    var books = await _db.Books.FindAsync(issuedBook.BookId);
-                    if (books == null || books.AvailableCopies <= 0)
+                    try
                     {
-                        ModelState.AddModelError("BookId", "Selected book is not available");
-                        ViewBag.Books = await _db.Books.Where(b => b.AvailableCopies > 0).ToListAsync();
-                        ViewBag.User = await _db.Users.ToListAsync();
-                        return View(issuedBook);
+                        // Verify user exists
+                        var user = await _db.Users
+                            .Where(u => u.UserName == UserSearch || u.NormalizedUserName == UserSearch.ToUpper())
+                            .FirstOrDefaultAsync();
+
+                        if (user == null)
+                        {
+                            ModelState.AddModelError("", "User not found. Please verify the username first.");
+                            ViewBag.UserVerified = false;
+                            return View();
+                        }
+
+                        if (BookIds == null || !BookIds.Any())
+                        {
+                            ModelState.AddModelError("", "Please select at least one book.");
+                            return View();
+                        }
+
+                        // Create issued book records
+                        foreach (var bookId in BookIds)
+                        {
+                            var book = await _db.Books.FindAsync(bookId);
+                            if (book == null || book.AvailableCopies <= 0)
+                            {
+                                ModelState.AddModelError("", $"Book '{book?.Title}' is not available.");
+                                return View();
+                            }
+
+                            var issuedBook = new IssuedBook
+                            {
+                                BookId = bookId,
+                                IssuedTo = user.Id,
+                                UserFullName = user.UserName,
+                                UserType = UserType,
+                                Class = Class,
+                                Section = Section,
+                                RollNumber = RollNumber,
+                                IssueDate = DateTimeOffset.Now,
+                                ReturnDate = null,
+                                Fine = 0
+                            };
+
+                            _db.IssuedBooks.Add(issuedBook);
+                            book.AvailableCopies--;
+                        }
+
+                        await _db.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
                     }
-
-                    issuedBook.IssueDate = DateTimeOffset.Now;
-                    issuedBook.ReturnDate = null;
-                    issuedBook.Fine = 0;
-
-                    _db.IssuedBooks.Add(issuedBook);
-
-                    books.AvailableCopies--;
-
-                    await _db.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", "Unable to issue books. Please try again.");
+                    }
                 }
-
-                ViewBag.Books = await _db.Books.Where(b => b.AvailableCopies > 0).ToListAsync();
-                ViewBag.User = await _db.Users.ToListAsync();
-                return View(issuedBook);
-            }
-            catch (Exception ex)
-            {
-
-                ModelState.AddModelError("", "Unable to issue book. Please try again.");
-                ViewBag.Books = await _db.Books.Where(b => b.AvailableCopies > 0).ToListAsync();
-                ViewBag.User = await _db.Users.ToListAsync();
-                return View(issuedBook);
             }
 
+            return View();
         }
+
 
         // GET: IssuedBookController/Edit/5
         public async Task<IActionResult> Edit(int id)

@@ -642,10 +642,19 @@ namespace SchoolManagementSystem.Models
         public int Id { get; set; }
 
         [ForeignKey(nameof(Book))]
+        [Required(ErrorMessage = "Please select a book")]
         public int BookId { get; set; }
 
         [ForeignKey(nameof(AppUser))]
+        [Required(ErrorMessage = "Please select a user")]
         public Guid IssuedTo { get; set; }
+
+
+        public string UserFullName { get; set; } = default!;
+        public string UserType { get; set; } = default!;
+        public string? Class { get; set; }
+        public string? Section { get; set; }
+        public int? RollNumber { get; set; }
 
         public DateTimeOffset IssueDate { get; set; }
         public DateTimeOffset? ReturnDate { get; set; }
