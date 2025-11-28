@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -626,10 +627,40 @@ namespace SchoolManagementSystem.Models
         [MaxLength(100)]
         public string? Category { get; set; }
 
+        [Range(1, int.MaxValue, ErrorMessage = "Total copies must be at least 1")]
         public int TotalCopies { get; set; }
         public int AvailableCopies { get; set; }
 
+        [DataType(DataType.ImageUrl)]
+        public string? ImageUrl { get; set; }
+
+        [NotMapped, DisplayName("Image")]
+        public IFormFile? ImageFile { get; set; }
+
         public ICollection<IssuedBook> IssuedBooks { get; set; } = new HashSet<IssuedBook>();
+        public bool CanBeIssued()
+        {
+            return AvailableCopies > 0;
+        }
+
+        // Method to issue a book
+        public void IssueBook()
+        {
+            if (AvailableCopies <= 0)
+                throw new InvalidOperationException("No copies available for issuing");
+
+            AvailableCopies--;
+        }
+
+        // Method to return a book
+        public void ReturnBook()
+        {
+            if (AvailableCopies >= TotalCopies)
+                throw new InvalidOperationException("Cannot return more copies than total");
+
+            AvailableCopies++;
+        }
+
     }
 
 

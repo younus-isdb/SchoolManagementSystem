@@ -128,7 +128,7 @@ namespace SchoolManagementSystem.Controllers
                         foreach (var bookId in BookIds)
                         {
                             var book = await _db.Books.FindAsync(bookId);
-                            if (book == null || book.AvailableCopies <= 0)
+                            if (book == null || !book.CanBeIssued())
                             {
                                 ModelState.AddModelError("", $"Book '{book?.Title}' is not available.");
                                 return View();
@@ -149,7 +149,7 @@ namespace SchoolManagementSystem.Controllers
                             };
 
                             _db.IssuedBooks.Add(issuedBook);
-                            book.AvailableCopies--;
+                            book.IssueBook();
                         }
 
                         await _db.SaveChangesAsync();
@@ -290,7 +290,7 @@ namespace SchoolManagementSystem.Controllers
                
                 if (issuedBook.Book != null)
                 {
-                    issuedBook.Book.AvailableCopies++;
+                    issuedBook.Book.ReturnBook();
                 }
 
                 _db.Update(issuedBook);
