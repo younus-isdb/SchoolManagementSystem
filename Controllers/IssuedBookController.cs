@@ -52,12 +52,12 @@ namespace SchoolManagementSystem.Controllers
             return View();
         }
 
-        // POST: IssuedBookController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(string operation, int bookCount, string UserSearch, string UserType,
             string Class, string Section, int? RollNumber, List<int> BookIds)
         {
+            // Set common ViewBag properties
             ViewBag.Books = await _db.Books.Where(b => b.AvailableCopies > 0).ToListAsync();
             ViewBag.BookCount = bookCount;
             ViewBag.UserSearch = UserSearch;
@@ -65,17 +65,15 @@ namespace SchoolManagementSystem.Controllers
             ViewBag.Class = Class;
             ViewBag.Section = Section;
             ViewBag.RollNumber = RollNumber;
+            ViewBag.SelectedBookIds = BookIds ?? new List<int>();
 
-            // Handle different operations
             if (operation == "searchuser")
             {
-                // Verify user exists
                 if (!string.IsNullOrEmpty(UserSearch))
                 {
                     var user = await _db.Users
                         .Where(u => u.UserName == UserSearch || u.NormalizedUserName == UserSearch.ToUpper())
                         .FirstOrDefaultAsync();
-
                     ViewBag.UserVerified = user != null;
                 }
                 return View();
@@ -83,8 +81,7 @@ namespace SchoolManagementSystem.Controllers
 
             if (operation == "add")
             {
-                bookCount++;
-                ViewBag.BookCount = bookCount;
+                ViewBag.BookCount = bookCount + 1;
                 return View();
             }
 
@@ -95,70 +92,76 @@ namespace SchoolManagementSystem.Controllers
                 {
                     bookCount--;
                     ViewBag.BookCount = bookCount;
+                    if (BookIds != null && BookIds.Count > index)
+                    {
+                        BookIds.RemoveAt(index);
+                        ViewBag.SelectedBookIds = BookIds;
+                    }
                 }
                 return View();
             }
 
-            // Handle final submission
             if (operation == "submit")
             {
-                if (ModelState.IsValid)
+                if (string.IsNullOrEmpty(UserSearch))
                 {
-                    try
-                    {
-                        // Verify user exists
-                        var user = await _db.Users
-                            .Where(u => u.UserName == UserSearch || u.NormalizedUserName == UserSearch.ToUpper())
-                            .FirstOrDefaultAsync();
+                    ModelState.AddModelError("", "Username is required.");
+                    return View();
+                }
 
-                        if (user == null)
+                if (BookIds == null || !BookIds.Any())
+                {
+                    ModelState.AddModelError("", "Please select at least one book.");
+                    return View();
+                }
+
+                var user = await _db.Users
+                    .Where(u => u.UserName == UserSearch || u.NormalizedUserName == UserSearch.ToUpper())
+                    .FirstOrDefaultAsync();
+
+                if (user == null)
+                {
+                    ModelState.AddModelError("", "User not found. Please verify the username first.");
+                    ViewBag.UserVerified = false;
+                    return View();
+                }
+
+                try
+                {
+                    foreach (var bookId in BookIds)
+                    {
+                        var book = await _db.Books.FindAsync(bookId);
+                        if (book == null || book.AvailableCopies <= 0)
                         {
-                            ModelState.AddModelError("", "User not found. Please verify the username first.");
-                            ViewBag.UserVerified = false;
+                            ModelState.AddModelError("", $"Book '{book?.Title}' is not available.");
                             return View();
                         }
 
-                        if (BookIds == null || !BookIds.Any())
+                        var issuedBook = new IssuedBook
                         {
-                            ModelState.AddModelError("", "Please select at least one book.");
-                            return View();
-                        }
+                            BookId = bookId,
+                            IssuedTo = user.Id,
+                            UserFullName = user.UserName,
+                            UserType = UserType,
+                            Class = Class,
+                            Section = Section,
+                            RollNumber = RollNumber,
+                            IssueDate = DateTime.Now,
+                            ReturnDate = null,
+                            Fine = 0
+                        };
 
-                        // Create issued book records
-                        foreach (var bookId in BookIds)
-                        {
-                            var book = await _db.Books.FindAsync(bookId);
-                            if (book == null || !book.CanBeIssued())
-                            {
-                                ModelState.AddModelError("", $"Book '{book?.Title}' is not available.");
-                                return View();
-                            }
-
-                            var issuedBook = new IssuedBook
-                            {
-                                BookId = bookId,
-                                IssuedTo = user.Id,
-                                UserFullName = user.UserName,
-                                UserType = UserType,
-                                Class = Class,
-                                Section = Section,
-                                RollNumber = RollNumber,
-                                IssueDate = DateTimeOffset.Now,
-                                ReturnDate = null,
-                                Fine = 0
-                            };
-
-                            _db.IssuedBooks.Add(issuedBook);
-                            book.IssueBook();
-                        }
-
-                        await _db.SaveChangesAsync();
-                        return RedirectToAction(nameof(Index));
+                        _db.IssuedBooks.Add(issuedBook);
+                        book.AvailableCopies--;
                     }
-                    catch (Exception ex)
-                    {
-                        ModelState.AddModelError("", "Unable to issue books. Please try again.");
-                    }
+
+                    await _db.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Unable to issue books. Error: {ex.Message}");
+                    return View();
                 }
             }
 

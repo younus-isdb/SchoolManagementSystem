@@ -355,10 +355,16 @@ namespace SchoolManagementSystem.Models
 			builder.Property(b => b.Category)
 				.HasMaxLength(100);
 
-			// Create composite unique index on Title and Category
-			builder.HasIndex(b => new { b.Title, b.Category })
-				.IsUnique();
-		}
+            builder.HasIndex(b => new { b.Title, b.Category })
+                .HasDatabaseName("IX_Books_Title_Category")
+                .IsUnique()
+                .HasFilter("[Category] is not null");
+
+            builder.HasIndex(b => b.Title)
+                .HasDatabaseName("IX_Books_Title_NoCategory")
+                .IsUnique()
+                .HasFilter("[Category] is null");
+        }
 	}
 
 	public class IssuedBookConfiguration : IEntityTypeConfiguration<IssuedBook>
