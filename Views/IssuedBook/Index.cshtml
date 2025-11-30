@@ -1,5 +1,5 @@
-﻿@* per book *@
-
+﻿
+@* 
 @model IEnumerable<SchoolManagementSystem.Models.IssuedBook>
 
 @{
@@ -13,7 +13,7 @@
         <a asp-action="Create" class="btn btn-primary">Issue New Book</a>
         @* <a asp-action="CurrentIssues" class="btn btn-info">View Current Issues</a>
         <a asp-action="Overdue" class="btn btn-warning">View Overdue</a> *@
-    </div>
+@*     </div>
 
     <table class="table table-striped table-bordered">
         <thead class="thead-dark">
@@ -59,12 +59,10 @@
             }
         </tbody>
     </table>
-</div>
+</div> *@
 
 
-
-@* per user *@
-                       @*  @model IEnumerable<SchoolManagementSystem.Models.IssuedBook>
+  @model IEnumerable<SchoolManagementSystem.Models.IssuedBook>
 
 @{
     ViewData["Title"] = "Issued Books";
@@ -133,4 +131,3 @@
         </tbody>
     </table>
 </div>
- *@
