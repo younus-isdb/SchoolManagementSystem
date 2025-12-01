@@ -98,19 +98,13 @@ namespace SchoolManagementSystem.Controllers
             return View(books);
         }
 
-        // POST: BookController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int id, Book book)
+        public async Task<ActionResult> Edit(int id, Book book, int newCopiesToAdd = 0)
         {
             if (id != book.BookId)
             {
                 return NotFound();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return View(book);
             }
 
             try
@@ -121,26 +115,32 @@ namespace SchoolManagementSystem.Controllers
                     return NotFound();
                 }
 
+                // Calculate new total after adding copies
+                var newTotalCopies = existingBook.TotalCopies + newCopiesToAdd;
+
                 // Check if reducing total copies below currently issued books
                 var currentlyIssued = await _db.IssuedBooks.CountAsync(a => a.BookId == id && a.ReturnDate == null);
 
-                if (book.TotalCopies < currentlyIssued)
+                if (newTotalCopies < currentlyIssued)
                 {
-                    ModelState.AddModelError("TotalCopies",
-                        $"Cannot reduce total copies to {book.TotalCopies}. There are {currentlyIssued} copies currently issued.");
-                    return View(book);
+                    ModelState.AddModelError("",
+                        $"Cannot reduce total copies. There are {currentlyIssued} copies currently issued.");
+
+                    // Return to view with current book data
+                    return View(existingBook);
                 }
 
                 // Calculate available copies difference
-                var diff = book.TotalCopies - existingBook.TotalCopies;
+                var diff = newCopiesToAdd; // Since we're only adding, diff = newCopiesToAdd
 
                 // Update book properties
                 existingBook.Title = book.Title;
                 existingBook.Author = book.Author;
                 existingBook.ISBN = book.ISBN;
                 existingBook.Category = book.Category;
-                existingBook.TotalCopies = book.TotalCopies;
+                existingBook.TotalCopies = newTotalCopies;
                 existingBook.AvailableCopies = Math.Max(0, existingBook.AvailableCopies + diff);
+
                 // Handle image update if new file is provided
                 if (book.ImageFile != null && book.ImageFile.Length > 0)
                 {
@@ -152,6 +152,16 @@ namespace SchoolManagementSystem.Controllers
                     // Save new image
                     existingBook.ImageUrl = await _uploadService.FileSave(book.ImageFile);
                 }
+
+                // Validate the model state for required fields
+                if (string.IsNullOrEmpty(existingBook.Title) ||
+                    string.IsNullOrEmpty(existingBook.Author) ||
+                    string.IsNullOrEmpty(existingBook.ISBN))
+                {
+                    ModelState.AddModelError("", "Title, Author, and ISBN are required fields.");
+                    return View(existingBook);
+                }
+
                 _db.Books.Update(existingBook);
                 await _db.SaveChangesAsync();
 
@@ -170,7 +180,7 @@ namespace SchoolManagementSystem.Controllers
             }
             catch (DbUpdateException ex)
             {
-                ModelState.AddModelError("", "A book with the same title already exists in this category.");
+                ModelState.AddModelError("", "A book with the same title already exists .");
                 return View(book);
             }
             catch (Exception ex)
@@ -184,6 +194,8 @@ namespace SchoolManagementSystem.Controllers
         {
             return _db.Books.Any(b => b.BookId == id);
         }
+
+      
 
         // GET: BookController/Delete/5
         public async Task<ActionResult> Delete(int id)
@@ -239,9 +251,6 @@ namespace SchoolManagementSystem.Controllers
             }
         }
 
-        private bool BookExists(int id)
-        {
-            return  _db.Books.Any(a => a.BookId == id);
-        }
+
     }
 }
