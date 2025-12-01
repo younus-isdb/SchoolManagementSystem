@@ -131,7 +131,7 @@ namespace SchoolManagementSystem.Controllers
                 }
 
                 // Calculate available copies difference
-                var diff = newCopiesToAdd; // Since we're only adding, diff = newCopiesToAdd
+                var diff = newCopiesToAdd; 
 
                 // Update book properties
                 existingBook.Title = book.Title;
@@ -153,14 +153,14 @@ namespace SchoolManagementSystem.Controllers
                     existingBook.ImageUrl = await _uploadService.FileSave(book.ImageFile);
                 }
 
-                // Validate the model state for required fields
-                if (string.IsNullOrEmpty(existingBook.Title) ||
-                    string.IsNullOrEmpty(existingBook.Author) ||
-                    string.IsNullOrEmpty(existingBook.ISBN))
-                {
-                    ModelState.AddModelError("", "Title, Author, and ISBN are required fields.");
-                    return View(existingBook);
-                }
+                //// Validate the model state for required fields
+                //if (string.IsNullOrEmpty(existingBook.Title) ||
+                //    string.IsNullOrEmpty(existingBook.Author) ||
+                //    string.IsNullOrEmpty(existingBook.ISBN))
+                //{
+                //    ModelState.AddModelError("", "Title, Author, and ISBN are required fields.");
+                //    return View(existingBook);
+                //}
 
                 _db.Books.Update(existingBook);
                 await _db.SaveChangesAsync();

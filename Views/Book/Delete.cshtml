@@ -79,7 +79,7 @@
                         </div>
                     </div>
 
-                    <!-- Issued Books Warning -->
+                 @*    <!-- Issued Books Warning -->
                     @if (Model.IssuedBooks.Any(ib => ib.ReturnDate == null))
                     {
                         <div class="alert alert-danger border-0 mt-4">
@@ -91,7 +91,7 @@
                                 </div>
                             </div>
                         </div>
-                    }
+                    } *@
 
                     <!-- Delete Form -->
                     <form asp-action="Delete" method="post">
