@@ -24,7 +24,7 @@ namespace SchoolManagementSystem.Controllers
             var issued = await _db.IssuedBooks
                 .Include(a => a.Book)
                 .Include(a => a.AppUser)
-                .OrderByDescending(a => a.IssueDate).ToListAsync();
+                .OrderByDescending(a => a.IssueDate).Where(i => i.ReturnDate == null).ToListAsync();
             return View(issued);
         }
 
@@ -369,7 +369,18 @@ namespace SchoolManagementSystem.Controllers
             }
         }
 
+        public async Task<IActionResult> ReturnedBooks()
+        {
+            // Show only RETURNED books
+            var returnedBooks = await _db.IssuedBooks
+                .Include(i => i.Book)
+                .Include(i => i.AppUser)
+                .Where(i => i.ReturnDate != null) // ONLY SHOW RETURNED
+                .OrderByDescending(i => i.ReturnDate)
+                .ToListAsync();
 
+            return View(returnedBooks);
+        }
 
         private bool IssuedBookExists(int id)
         {
