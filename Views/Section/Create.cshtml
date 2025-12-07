@@ -3,7 +3,9 @@
 <form id="modalForm" asp-action="Create" method="post">
     <div class="mb-3">
         <label asp-for="ClassId" class="form-label"></label>
-        <select asp-for="ClassId" class="form-select" asp-items="@(new SelectList(ViewBag.Classes, "ClassId", "ClassName"))" required>
+        <select asp-for="ClassId"
+                asp-items="@(new SelectList(ViewBag.ClassList, "ClassId", "ClassName"))"
+                class="form-control">
             <option value="">-- Select Class --</option>
         </select>
         <span asp-validation-for="ClassId" class="text-danger"></span>

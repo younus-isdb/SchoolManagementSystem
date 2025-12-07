@@ -37,7 +37,7 @@ namespace SchoolManagementSystem.Controllers
         // GET: Section/Create
         public IActionResult Create()
         {
-            ViewBag.Classes = _context.Classes.ToList();
+            ViewBag.Classlist = _context.Classes.ToList();
             return View();
         }
 
@@ -52,7 +52,7 @@ namespace SchoolManagementSystem.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.Classes = _context.Classes.ToList();
+            ViewBag.Classlist = _context.Classes.ToList();
             return View(section);
         }
 
@@ -64,7 +64,7 @@ namespace SchoolManagementSystem.Controllers
             var section = await _context.Sections.FindAsync(id);
             if (section == null) return NotFound();
 
-            ViewBag.Classes = _context.Classes.ToList();
+            ViewBag.Classlist = _context.Classes.ToList();
             return View(section);
         }
 
@@ -89,7 +89,7 @@ namespace SchoolManagementSystem.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.Classes = _context.Classes.ToList();
+            ViewBag.Classlist = _context.Classes.ToList();
             return View(section);
         }
 
