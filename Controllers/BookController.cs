@@ -98,19 +98,13 @@ namespace SchoolManagementSystem.Controllers
             return View(books);
         }
 
-        // POST: BookController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int id, Book book)
+        public async Task<ActionResult> Edit(int id, Book book, int newCopiesToAdd = 0)
         {
             if (id != book.BookId)
             {
                 return NotFound();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return View(book);
             }
 
             try
@@ -121,26 +115,32 @@ namespace SchoolManagementSystem.Controllers
                     return NotFound();
                 }
 
+                // Calculate new total after adding copies
+                var newTotalCopies = existingBook.TotalCopies + newCopiesToAdd;
+
                 // Check if reducing total copies below currently issued books
                 var currentlyIssued = await _db.IssuedBooks.CountAsync(a => a.BookId == id && a.ReturnDate == null);
 
-                if (book.TotalCopies < currentlyIssued)
+                if (newTotalCopies < currentlyIssued)
                 {
-                    ModelState.AddModelError("TotalCopies",
-                        $"Cannot reduce total copies to {book.TotalCopies}. There are {currentlyIssued} copies currently issued.");
-                    return View(book);
+                    ModelState.AddModelError("",
+                        $"Cannot reduce total copies. There are {currentlyIssued} copies currently issued.");
+
+                    // Return to view with current book data
+                    return View(existingBook);
                 }
 
                 // Calculate available copies difference
-                var diff = book.TotalCopies - existingBook.TotalCopies;
+                var diff = newCopiesToAdd; 
 
                 // Update book properties
                 existingBook.Title = book.Title;
                 existingBook.Author = book.Author;
                 existingBook.ISBN = book.ISBN;
                 existingBook.Category = book.Category;
-                existingBook.TotalCopies = book.TotalCopies;
+                existingBook.TotalCopies = newTotalCopies;
                 existingBook.AvailableCopies = Math.Max(0, existingBook.AvailableCopies + diff);
+
                 // Handle image update if new file is provided
                 if (book.ImageFile != null && book.ImageFile.Length > 0)
                 {
@@ -152,6 +152,16 @@ namespace SchoolManagementSystem.Controllers
                     // Save new image
                     existingBook.ImageUrl = await _uploadService.FileSave(book.ImageFile);
                 }
+
+                //// Validate the model state for required fields
+                //if (string.IsNullOrEmpty(existingBook.Title) ||
+                //    string.IsNullOrEmpty(existingBook.Author) ||
+                //    string.IsNullOrEmpty(existingBook.ISBN))
+                //{
+                //    ModelState.AddModelError("", "Title, Author, and ISBN are required fields.");
+                //    return View(existingBook);
+                //}
+
                 _db.Books.Update(existingBook);
                 await _db.SaveChangesAsync();
 
@@ -170,7 +180,7 @@ namespace SchoolManagementSystem.Controllers
             }
             catch (DbUpdateException ex)
             {
-                ModelState.AddModelError("", "A book with the same title already exists in this category.");
+                ModelState.AddModelError("", "A book with the same title already exists .");
                 return View(book);
             }
             catch (Exception ex)
@@ -184,6 +194,8 @@ namespace SchoolManagementSystem.Controllers
         {
             return _db.Books.Any(b => b.BookId == id);
         }
+
+      
 
         // GET: BookController/Delete/5
         public async Task<ActionResult> Delete(int id)
@@ -200,48 +212,70 @@ namespace SchoolManagementSystem.Controllers
             return View(book);
         }
 
-        // POST: BookController/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
             try
             {
-                var book = await _db.Books.
-                    Include(b => b.IssuedBooks).FirstOrDefaultAsync(b => b.BookId == id);
+                var book = await _db.Books
+                    .Include(b => b.IssuedBooks)
+                    .FirstOrDefaultAsync(b => b.BookId == id);
+
                 if (book == null)
                 {
                     return NotFound();
                 }
 
-                bool hasActIssued = book.IssuedBooks.Any(a => a.ReturnDate == null);
-                if (hasActIssued)
+                // Check if book has ANY ACTIVE (not returned) issues
+                bool hasActiveIssues = book.IssuedBooks.Any(ib => ib.ReturnDate == null);
+
+                if (hasActiveIssues)
                 {
-                    ModelState.AddModelError("", "Cannot delete book. There are active issued copies that haven't been returned yet.");
+                    // Book is currently issued - cannot delete
+                    int activeCount = book.IssuedBooks.Count(ib => ib.ReturnDate == null);
+                    ModelState.AddModelError("",
+                        $"Cannot delete book. There are {activeCount} copy(s) currently issued to students. " +
+                        "Please ensure all copies are returned before deleting.");
+
                     return View("Delete", book);
                 }
 
+                // Book has NO ACTIVE issues (all returned or never issued) - safe to delete
+
+                // Also delete all related IssuedBook records (past history)
+                if (book.IssuedBooks.Any())
+                {
+                    _db.IssuedBooks.RemoveRange(book.IssuedBooks);
+                }
+
+                // Delete the image file if exists
+                if (!string.IsNullOrEmpty(book.ImageUrl))
+                {
+                    await _uploadService.FileDelete(book.ImageUrl);
+                }
+
+                // Delete the book
                 _db.Books.Remove(book);
                 await _db.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Book deleted successfully!";
                 return RedirectToAction(nameof(Index));
             }
-
             catch (DbUpdateException ex)
             {
                 ModelState.AddModelError("", "Unable to delete book. It may have related records in the system.");
-                return View("Delete", await _db.Books.FindAsync(id));
+                var book = await _db.Books.FindAsync(id);
+                return View("Delete", book);
             }
-
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "An error occurred while deleting the book.");
-                return View(await _db.Books.FindAsync(id));
+                var book = await _db.Books.FindAsync(id);
+                return View("Delete", book);
             }
         }
 
-        private bool BookExists(int id)
-        {
-            return  _db.Books.Any(a => a.BookId == id);
-        }
+
     }
 }
