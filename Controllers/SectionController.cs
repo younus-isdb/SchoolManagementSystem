@@ -1,129 +1,164 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using SchoolManagementSystem.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SchoolManagementSystem.Models;
 
-namespace SchoolManagementSystem.Controllers
+public class SectionController : Controller
 {
-    public class SectionController : Controller
-    {
-        private readonly SchoolDbContext _context;
+	private readonly SchoolDbContext _context;
 
-        public SectionController(SchoolDbContext context)
-        {
-            _context = context;
-        }
+	public SectionController(SchoolDbContext context)
+	{
+		_context = context;
+	}
+	[HttpGet]
+	public IActionResult GetAll()
+	{
+		var data = _context.Sections
+			.Select(s => new { s.ClassId, s.SectionName })
+			.ToList();
 
-        // GET: Section
-        public async Task<IActionResult> Index()
-        {
-            var sections = await _context.Sections.Include(s => s.Class).ToListAsync();
-            return View(sections);
-        }
+		return Json(data);
+	}
 
-        // GET: Section/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null) return NotFound();
+	// ===========================
+	//  MAIN CREATE VIEW (Normal)
+	// ===========================
 
-            var section = await _context.Sections
-                .Include(s => s.Class)
-                .FirstOrDefaultAsync(m => m.SectionId == id);
+	// GET: /Section/Create
+	public IActionResult Create()
+	{
+		ViewBag.ClassList = _context.Classes.ToList();
+		return View(new Section());
+	}
 
-            if (section == null) return NotFound();
+	// POST: /Section/Create  (Normal Form Submit)
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> Create(Section model)
+	{
+		if (ModelState.IsValid)
+		{
+			_context.Sections.Add(model);
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(Index));
+		}
 
-            return View(section);
-        }
+		ViewBag.ClassList = _context.Classes.ToList();
+		return View(model);
+	}
 
-        // GET: Section/Create
-        public IActionResult Create()
-        {
-            ViewBag.Classlist = _context.Classes.ToList();
-            return View();
-        }
 
-        // POST: Section/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Section section)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(section);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewBag.Classlist = _context.Classes.ToList();
-            return View(section);
-        }
+	// ===========================
+	//  MODAL CREATE (AJAX)
+	// ===========================
 
-        // GET: Section/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null) return NotFound();
+	// GET: /Section/CreateModal
+	[HttpGet]
+	public IActionResult CreateModal()
+	{
+		ViewBag.ClassList = _context.Classes.ToList();
+		return PartialView("_SectionModal", new Section());
+	}
 
-            var section = await _context.Sections.FindAsync(id);
-            if (section == null) return NotFound();
+	// POST: /Section/CreateModalPost (AJAX)
+	[HttpPost]
+	public async Task<IActionResult> CreateModalPost(Section model)
+	{
+		if (ModelState.IsValid)
+		{
+			_context.Sections.Add(model);
+			await _context.SaveChangesAsync();
 
-            ViewBag.Classlist = _context.Classes.ToList();
-            return View(section);
-        }
+			return Json(new { success = true });
+		}
 
-        // POST: Section/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Section section)
-        {
-            if (id != section.SectionId) return NotFound();
+		return Json(new { success = false });
+	}
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(section);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SectionExists(section.SectionId)) return NotFound();
-                    else throw;
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewBag.Classlist = _context.Classes.ToList();
-            return View(section);
-        }
 
-        // GET: Section/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null) return NotFound();
+	// ===========================
+	//  INDEX
+	// ===========================
+	public async Task<IActionResult> Index()
+	{
+		var data = await _context.Sections
+			.Include(c => c.Class)
+			.ToListAsync();
 
-            var section = await _context.Sections
-                .Include(s => s.Class)
-                .FirstOrDefaultAsync(m => m.SectionId == id);
+		return View(data);
+	}
 
-            if (section == null) return NotFound();
 
-            return View(section);
-        }
+	// ===========================
+	//  EDIT
+	// ===========================
+	public async Task<IActionResult> Edit(int id)
+	{
+		var data = await _context.Sections.FindAsync(id);
+		if (data == null) return NotFound();
 
-        // POST: Section/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var section = await _context.Sections.FindAsync(id);
-            if (section != null)
-            {
-                _context.Sections.Remove(section);
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToAction(nameof(Index));
-        }
+		ViewBag.ClassList = _context.Classes.ToList();
+		return View(data);
+	}
 
-        private bool SectionExists(int id)
-        {
-            return _context.Sections.Any(e => e.SectionId == id);
-        }
-    }
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> Edit(Section model)
+	{
+		if (ModelState.IsValid)
+		{
+			_context.Sections.Update(model);
+			await _context.SaveChangesAsync();
+
+			return RedirectToAction(nameof(Index));
+		}
+
+		ViewBag.ClassList = _context.Classes.ToList();
+		return View(model);
+	}
+
+
+	// ===========================
+	//  DETAILS
+	// ===========================
+	public async Task<IActionResult> Details(int id)
+	{
+		var data = await _context.Sections
+			.Include(s => s.Class)
+			.FirstOrDefaultAsync(s => s.SectionId == id);
+
+		if (data == null) return NotFound();
+
+		return View(data);
+	}
+
+
+	// ===========================
+	//  DELETE
+	// ===========================
+	public async Task<IActionResult> Delete(int id)
+	{
+		var data = await _context.Sections
+			.Include(s => s.Class)
+			.FirstOrDefaultAsync(s => s.SectionId == id);
+
+		if (data == null) return NotFound();
+
+		return View(data);
+	}
+
+	[HttpPost, ActionName("Delete")]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> DeleteConfirmed(int id)
+	{
+		var data = await _context.Sections.FindAsync(id);
+
+		if (data != null)
+		{
+			_context.Sections.Remove(data);
+			await _context.SaveChangesAsync();
+		}
+
+		return RedirectToAction(nameof(Index));
+	}
 }

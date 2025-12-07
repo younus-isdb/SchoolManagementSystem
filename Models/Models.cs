@@ -367,7 +367,7 @@ namespace SchoolManagementSystem.Models
         [Required, MaxLength(50)]
         public string SectionName { get; set; } = default!;
 
-        public Class Class { get; set; } = default!;
+        public Class? Class { get; set; } = default!;
         public ICollection<Student> Students { get; set; } = new HashSet<Student>();
         public ICollection<Timetable> Timetables { get; set; } = new HashSet<Timetable>();
     }

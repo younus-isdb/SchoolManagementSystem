@@ -7,7 +7,6 @@
     <thead>
         <tr>
             <th>Section Name</th>
-
             <th>Class</th>
             <th>Actions</th>
         </tr>
@@ -17,12 +16,11 @@
         {
             <tr>
                 <td>@item.SectionName</td>
-     
                 <td>@item.Class.ClassName</td>
                 <td>
-                    <a href="/Section/Details/@item.ClassId" class="btn btn-info btn-sm">Details</a>
-                    <a href="/Section/Edit/@item.ClassId" class="btn btn-warning btn-sm">Edit</a>
-                    <a href="/Section/Delete/@item.ClassId" class="btn btn-danger btn-sm">Delete</a>
+                    <a href="/Section/Details/@item.SectionId" class="btn btn-info btn-sm">Details</a>
+                    <a href="/Section/Edit/@item.SectionId" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="/Section/Delete/@item.SectionId" class="btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>
         }
