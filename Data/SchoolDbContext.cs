@@ -375,7 +375,10 @@ namespace SchoolManagementSystem.Models
                 builder.HasKey(ib => ib.Id);
                 builder.HasOne(ib => ib.Book).WithMany(b => b.IssuedBooks).HasForeignKey(ib => ib.BookId).OnDelete(DeleteBehavior.Restrict);
                 builder.HasOne(ib => ib.AppUser).WithMany().HasForeignKey(ib => ib.IssuedTo).OnDelete(DeleteBehavior.Restrict);
-            }
+            builder.HasIndex(ib => new { ib.BookId, ib.IssuedTo })
+            .IsUnique()
+            .HasFilter("[ReturnDate] IS NULL");
+        }
         }
 
         public class NoticeConfiguration : IEntityTypeConfiguration<Notice>

@@ -687,8 +687,8 @@ namespace SchoolManagementSystem.Models
         public string? Section { get; set; }
         public int? RollNumber { get; set; }
 
-        public DateTimeOffset IssueDate { get; set; }
-        public DateTimeOffset? ReturnDate { get; set; }
+        public DateOnly IssueDate { get; set; }
+        public DateOnly? ReturnDate { get; set; }
 
         public decimal Fine { get; set; }
 

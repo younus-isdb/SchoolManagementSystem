@@ -738,14 +738,14 @@ namespace SchoolManagementSystem.Migrations
                     b.Property<decimal>("Fine")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTimeOffset>("IssueDate")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateOnly>("IssueDate")
+                        .HasColumnType("date");
 
                     b.Property<Guid>("IssuedTo")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("ReturnDate")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateOnly?>("ReturnDate")
+                        .HasColumnType("date");
 
                     b.Property<int?>("RollNumber")
                         .HasColumnType("int");
@@ -763,9 +763,11 @@ namespace SchoolManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookId");
-
                     b.HasIndex("IssuedTo");
+
+                    b.HasIndex("BookId", "IssuedTo")
+                        .IsUnique()
+                        .HasFilter("[ReturnDate] IS NULL");
 
                     b.ToTable("IssuedBooks", (string)null);
                 });

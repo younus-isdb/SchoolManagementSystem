@@ -61,9 +61,12 @@
                                         <td>
                                             @if (issue.ReturnDate.HasValue)
                                             {
-                                                var daysIssued = (issue.ReturnDate.Value - issue.IssueDate).Days;
+                                                var daysIssued =
+                                                issue.ReturnDate.Value.DayNumber - issue.IssueDate.DayNumber;
+
                                                 <span class="badge bg-info">@daysIssued days</span>
                                             }
+
                                         </td>
                                         <td class="@(issue.Fine > 0 ? "text-danger fw-bold" : "text-success")">
                                             @issue.Fine.ToString("C")

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SchoolManagementSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class January : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -63,7 +63,8 @@ namespace SchoolManagementSystem.Migrations
                     ISBN = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Category = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     TotalCopies = table.Column<int>(type: "int", nullable: false),
-                    AvailableCopies = table.Column<int>(type: "int", nullable: false)
+                    AvailableCopies = table.Column<int>(type: "int", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -360,8 +361,13 @@ namespace SchoolManagementSystem.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     BookId = table.Column<int>(type: "int", nullable: false),
                     IssuedTo = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IssueDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    ReturnDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    UserFullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Class = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Section = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RollNumber = table.Column<int>(type: "int", nullable: true),
+                    IssueDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    ReturnDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Fine = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
@@ -1018,6 +1024,20 @@ namespace SchoolManagementSystem.Migrations
                 column: "TeacherId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Books_Title_Category",
+                table: "Books",
+                columns: new[] { "Title", "Category" },
+                unique: true,
+                filter: "[Category] is not null");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Books_Title_NoCategory",
+                table: "Books",
+                column: "Title",
+                unique: true,
+                filter: "[Category] is null");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Classes_DepartmentId",
                 table: "Classes",
                 column: "DepartmentId");
@@ -1078,9 +1098,11 @@ namespace SchoolManagementSystem.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_IssuedBooks_BookId",
+                name: "IX_IssuedBooks_BookId_IssuedTo",
                 table: "IssuedBooks",
-                column: "BookId");
+                columns: new[] { "BookId", "IssuedTo" },
+                unique: true,
+                filter: "[ReturnDate] IS NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IssuedBooks_IssuedTo",

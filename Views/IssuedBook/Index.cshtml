@@ -63,20 +63,25 @@
                         @if (i == 0)
                         {
                             <td rowspan="@bookCount" style="vertical-align: middle;">
-                               
-                                <div class="d-flex flex-column gap-1 mt-2">
+                                <div class="d-flex flex-column gap-1 mt-2">                                 
                                     <a asp-action="Edit" asp-route-userId="@firstIssue.IssuedTo"
-                                       class="btn btn-secondary btn-sm">Edit</a>
+                                       class="btn btn-secondary btn-sm">Edit All</a>
                                     <a asp-action="Details" asp-route-userId="@firstIssue.IssuedTo"
-                                       class="btn btn-info btn-sm"> Details</a>
-                                    <a asp-action="Delete" asp-route-userId="@firstIssue.IssuedTo"
-                                       class="btn btn-danger btn-sm">Delete</a>
+                                       class="btn btn-info btn-sm">Details</a>
+                                   
+                                   @*  <a asp-action="Delete" asp-route-userId="@firstIssue.IssuedTo"
+                                       class="btn btn-danger btn-sm">Delete All</a> *@
                                 </div>
                             </td>
                         }
                     </tr>
+                
                 }
+               
             }
+       
+           
+       
         </tbody>
     </table>
 </div>
@@ -137,7 +142,7 @@
                         }
                     </td> *@
 
-             @*        <td>
+@*        <td>
                         <!-- Individual actions for each book -->
                         <div class="btn-group-vertical">
                             @foreach (var issue in userGroup)
@@ -153,7 +158,7 @@
                             }
                         </div> *@
 
-                       @*  <!-- Bulk return for all -->
+@*  <!-- Bulk return for all -->
                         @if (userGroup.Any(i => i.ReturnDate == null))
                         {
                             <div class="mt-2">
