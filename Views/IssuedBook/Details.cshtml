@@ -1,4 +1,4 @@
-﻿@using SchoolManagementSystem.Models
+﻿@* @using SchoolManagementSystem.Models
 @model List<IssuedBook>
 
 @{
@@ -27,7 +27,7 @@
             }
             else
             {
-                <!-- User Information (from first book) -->
+        
                 @if (Model.Any())
                 {
                     var firstBook = Model.First();
@@ -46,7 +46,7 @@
                     </div>
                 }
 
-                <!-- Books Table -->
+              
                 <div class="table-responsive">
                     <table class="table table-hover table-striped">
                         <thead class="table-dark">
@@ -177,10 +177,12 @@
         margin-right: 5px;
     }
 </style>
+ *@
 
 
-
-@* @model SchoolManagementSystem.Models.IssuedBook
+@* @model SchoolManagementSystem.Models.IssuedBook *@
+@using SchoolManagementSystem.Models
+@model List<IssuedBook>
 
 @{
     ViewData["Title"] = "Issued Book Details";
@@ -196,62 +198,60 @@
         </div>
         <div class="card-body">
             <dl class="row">
-                <dt class="col-sm-3">Issue Id</dt>
-                <dd class="col-sm-9">@Model.Id</dd>
-
-                <dt class="col-sm-3">Issued to</dt>
-                <dd class="col-sm-9">@Model.AppUser?.UserName</dd> 
-
-                <dt class="col-sm-3">User FullName</dt>
-                <dd class="col-sm-9">@Model.UserFullName</dd>
-
-                <dt class="col-sm-3">UserType</dt>
-                <dd class="col-sm-9">@Model.UserType</dd>
-
-                @if (Model.UserType == "Student")
+                @if (Model.Any())
                 {
-                    <dt class="col-sm-3">Class</dt>
-                    <dd class="col-sm-9">@Model.Class</dd>
-
-                    <dt class="col-sm-3">Section</dt>
-                    <dd class="col-sm-9">@Model.Section</dd>
-
-                    <dt class="col-sm-3">RollNumber</dt>
-                    <dd class="col-sm-9">@Model.RollNumber</dd>
+                    var firstBook = Model.First();
+                    <div class="user-card mb-4 p-3 bg-light rounded">
+                        <h5>User Information</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Name:</strong> @firstBook.UserFullName</p>
+                                <p><strong>Email:</strong> @firstBook.AppUser?.Email</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>User ID:</strong> @firstBook.IssuedTo</p>
+                                <p><strong>User Type:</strong> @firstBook.UserType</p>
+                            </div>
+                        </div>
+                    </div>
                 }
-
-                <dt class="col-sm-3">IssueDate</dt>
-                <dd class="col-sm-9">@Model.IssueDate.ToString("dd-MMM-yyyy")</dd>
-
-                <dt class="col-sm-3">ReturnDate</dt>
-                <dd class="col-sm-9">
-                    @if (Model.ReturnDate.HasValue)
-                    {
-                        @Model.ReturnDate.Value.ToString("dd-MMM-yyyy")
-                    }
-                    else
-                    {
-                        <span class="badge bg-warning">Not Returned</span>
-                    }
-                </dd>
-
-                <dt class="col-sm-3">Fine</dt>
-                <dd class="col-sm-9">@Model.Fine</dd>
+ @for (int i = 0; i < Model.Count; i++)
+                            {
+                                var book = Model[i];
+                    <dd class="text-center"><strong>Book no:</strong>@(i + 1)</dd>
 
                 <dt class="col-sm-3">Book Title</dt>
-                <dd class="col-sm-9">@Model.Book?.Title</dd> 
+                    <dd class="col-sm-9">@book.Book?.Title</dd>
 
                 <dt class="col-sm-3">Author</dt>
-                <dd class="col-sm-9">@Model.Book?.Author</dd>
+                    <dd class="col-sm-9">@book.Book?.Author</dd>
 
                 <dt class="col-sm-3">Category</dt>
-                <dd class="col-sm-9">@Model.Book?.Category</dd> 
+                    <dd class="col-sm-9">@book.Book?.Category</dd>
+
+                    <dt class="col-sm-3">IssueDate</dt>
+                    <dd class="col-sm-9">@book.IssueDate.ToString("dd-MMM-yyyy")</dd>
+
+                    <dt class="col-sm-3">ReturnDate</dt>
+                    <dd class="col-sm-9">
+                        @if (@book.ReturnDate.HasValue)
+                        {
+                            @book.ReturnDate.Value.ToString("dd-MMM-yyyy")
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning">Not Returned</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">Fine</dt>
+                    <dd class="col-sm-9">@book.Fine</dd>
 
                 <dt class="col-sm-3">Image</dt>
                 <dd class="col-sm-9">
-                    @if (!string.IsNullOrEmpty(Model.Book?.ImageUrl))
+                        @if (!string.IsNullOrEmpty(@book.Book?.ImageUrl))
                     {
-                        <img src="@Model.Book.ImageUrl" alt="@Model.Book.Title"
+                            <img src="@book.Book.ImageUrl" alt="@book.Book.Title"
                              class="img-fluid rounded shadow" style="max-height: 300px;">
                     }
                     else
@@ -259,17 +259,15 @@
                         <span class="text-muted">No image available</span>
                     }
                 </dd>
+                }
             </dl>
 
             <!-- Action buttons -->
             <div class="mt-4">
                
                 <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-                @if (!Model.ReturnDate.HasValue)
-                {
-                    <a asp-action="ReturnBook" asp-route-id="@Model.Id" class="btn btn-success">Return Book</a>
-                }
+               
             </div>
         </div>
     </div>
-</div> *@
+</div>
