@@ -100,7 +100,9 @@ namespace SchoolManagementSystem.Controllers
     new QuickLink { Title="Add Teacher", Url="/Teacher/Create", IconClass="bi bi-person-badge-fill" },
     new QuickLink { Title="Mark Attendance", Url="/Attendance/Mark", IconClass="bi bi-check2-square" },
     new QuickLink { Title="Fee Collection", Url="/FeeCollection", IconClass="bi bi-currency-dollar" },
-    new QuickLink { Title="Issue Book", Url="/IssuedBook/Create", IconClass="bi bi-book-half" }
+    new QuickLink { Title="Issue Book", Url="/IssuedBook/Create", IconClass="bi bi-book-half" },
+      new QuickLink { Title="Exam", Url="/exam", IconClass="bi bi-book-half" },
+      new QuickLink { Title="Exam Result", Url="/examresult", IconClass="bi bi-book-half" }
 };
 
 
