@@ -1,0 +1,41 @@
+﻿@model Exam
+
+<h2>Edit Exam</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="ExamId" />
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label>Class</label>
+        <select asp-for="ClassId" class="form-control" asp-items="ViewBag.ClassId"></select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Term" class="form-label"></label>
+        <input asp-for="Term" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Type" class="form-label"></label>
+        <input asp-for="Type" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StartDate" class="form-label"></label>
+        <input asp-for="StartDate" type="datetime-local" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="EndDate" class="form-label"></label>
+        <input asp-for="EndDate" type="datetime-local" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>

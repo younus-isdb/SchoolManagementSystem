@@ -1,0 +1,39 @@
+﻿@model IEnumerable<ExamResult>
+
+<h2>Exam Results</h2>
+
+<a asp-action="Create" asp-route-examId="@ViewBag.ExamId" class="btn btn-primary mb-2">
+    Add Result
+</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>Subject</th>
+            <th>Marks</th>
+            <th>Grade</th>
+            <th>Remarks</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Student.StudentName</td>
+                <td>@item.Subject.SubjectName</td>
+                <td>@item.MarksObtained</td>
+                <td>@item.Grade</td>
+                <td>@item.Remarks</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ResultId" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.ResultId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-controller="Exam" asp-action="Details" asp-route-id="@ViewBag.ExamId"
+   class="btn btn-secondary">Back to Exam</a>

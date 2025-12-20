@@ -1,0 +1,50 @@
+﻿@model Exam
+
+<h2>Exam Details</h2>
+
+<div class="mb-3">
+    <strong>Name:</strong> @Model.Name
+</div>
+<div class="mb-3">
+    <strong>Class:</strong> @Model.Class.ClassName
+</div>
+<div class="mb-3">
+    <strong>Term:</strong> @Model.Term
+</div>
+<div class="mb-3">
+    <strong>Type:</strong> @Model.Type
+</div>
+<div class="mb-3">
+    <strong>Start Date:</strong> @Model.StartDate.ToString("dd-MM-yyyy HH:mm")
+</div>
+<div class="mb-3">
+    <strong>End Date:</strong> @Model.EndDate.ToString("dd-MM-yyyy HH:mm")
+</div>
+
+<h3>Exam Results</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>Subject</th>
+            <th>Marks</th>
+            <th>Grade</th>
+            <th>Remarks</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var result in Model.ExamResults)
+        {
+            <tr>
+                <td>@result.Student.StudentName</td>
+                <td>@result.Subject.SubjectName</td>
+                <td>@result.MarksObtained</td>
+                <td>@result.Grade</td>
+                <td>@result.Remarks</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Back to Exams</a>
+<a asp-controller="ExamResult" asp-action="Create" asp-route-examId="@Model.ExamId" class="btn btn-primary">Add Result</a>

@@ -1,0 +1,36 @@
+﻿@model ExamResult
+
+<h2>Edit Exam Result</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="ResultId" />
+    <input type="hidden" asp-for="ExamId" />
+
+    <div class="mb-3">
+        <label>Student</label>
+        <select asp-for="StudentId" class="form-control" asp-items="ViewBag.StudentId"></select>
+    </div>
+
+    <div class="mb-3">
+        <label>Subject</label>
+        <select asp-for="SubjectId" class="form-control" asp-items="ViewBag.SubjectId"></select>
+    </div>
+
+    <div class="mb-3">
+        <label>Marks Obtained</label>
+        <input asp-for="MarksObtained" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Grade</label>
+        <input asp-for="Grade" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Remarks</label>
+        <textarea asp-for="Remarks" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="Index" asp-route-examId="@Model.ExamId" class="btn btn-secondary">Back</a>
+</form>
