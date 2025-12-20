@@ -230,8 +230,8 @@ namespace SchoolManagementSystem.Controllers
                 return NotFound();
             }
 
-            // Get ONLY ACTIVE (not returned) issued books for this user
-            var issuedBooks = await _db.IssuedBooks
+			//only for active users
+			var issuedBooks = await _db.IssuedBooks
                 .Include(b => b.Book)
                 .Include(b => b.AppUser)
                 .Where(b => b.IssuedTo == userGuid && b.ReturnDate == null) // Only active issues
@@ -244,7 +244,7 @@ namespace SchoolManagementSystem.Controllers
 
             var firstBook = issuedBooks.First();
 
-            // Get book IDs currently ACTIVE for this user
+            //  book ids for current user
             var bookIds = issuedBooks.Select(b => b.BookId).ToList();
 
             // Setup ViewBag
@@ -257,7 +257,7 @@ namespace SchoolManagementSystem.Controllers
             ViewBag.BookCount = issuedBooks.Count;
             ViewBag.UserIdString = userId;
 
-            // Load books that are available OR currently issued to this user
+            // Load books that are available or currently issued to this user
             ViewBag.Books = await _db.Books
                 .Where(b => b.AvailableCopies > 0 || bookIds.Contains(b.BookId))
                 .ToListAsync();
@@ -308,7 +308,6 @@ namespace SchoolManagementSystem.Controllers
                 .Where(b => b.AvailableCopies > 0 || activeBookIds.Contains(b.BookId))
                 .ToListAsync();
 
-            // Handle "Add Another Book"
             if (operation == "add")
             {
                 currentBookIds.Add(0); // Add empty selection
@@ -317,7 +316,6 @@ namespace SchoolManagementSystem.Controllers
                 return View(firstBook);
             }
 
-            // Handle "Delete Book"
             if (operation.StartsWith("delete-"))
             {
                 int.TryParse(operation.Replace("delete-", ""), out int index);
@@ -344,12 +342,10 @@ namespace SchoolManagementSystem.Controllers
                 return View(firstBook);
             }
 
-            // THE FIX IS HERE - When "submit" is clicked, save ALL selected books to database
             if (operation == "submit")
             {
                 ModelState.Clear();
 
-                // Basic validation
                 if (string.IsNullOrEmpty(UserSearch))
                     ModelState.AddModelError("UserSearch", "Username is required.");
 
@@ -375,7 +371,6 @@ namespace SchoolManagementSystem.Controllers
                     ViewBag.RollNumber = null;
                 }
 
-                // Get valid book IDs (remove 0 values)
                 var validBookIds = currentBookIds.Where(id => id > 0).Distinct().ToList();
 
                 if (!validBookIds.Any())
@@ -390,7 +385,7 @@ namespace SchoolManagementSystem.Controllers
 
                 try
                 {
-                    // Find user
+                  
                     var user = await _db.Users
                         .Where(u => u.UserName == UserSearch || u.NormalizedUserName == UserSearch.ToUpper())
                         .FirstOrDefaultAsync();
@@ -402,29 +397,24 @@ namespace SchoolManagementSystem.Controllers
                         return View(firstBook);
                     }
 
-                    // CRITICAL FIX: Get ALL existing active books for this user
                     var allExistingBooks = await _db.IssuedBooks
                         .Where(b => b.IssuedTo == userGuid && b.ReturnDate == null)
                         .ToListAsync();
 
-                    // Book IDs to keep (existing books that user still wants)
                     var bookIdsToKeep = allExistingBooks
                         .Where(b => validBookIds.Contains(b.BookId))
                         .Select(b => b.BookId)
                         .ToList();
 
-                    // Book IDs to add (new books that aren't already issued)
                     var bookIdsToAdd = validBookIds
                         .Where(id => !allExistingBooks.Any(b => b.BookId == id))
                         .ToList();
 
-                    // Book IDs to remove (existing books that user doesn't want anymore)
                     var bookIdsToRemove = allExistingBooks
                         .Where(b => !validBookIds.Contains(b.BookId))
                         .Select(b => b.BookId)
                         .ToList();
 
-                    // 1. Return copies of books being removed
                     foreach (var bookId in bookIdsToRemove)
                     {
                         var book = await _db.Books.FindAsync(bookId);
@@ -434,7 +424,6 @@ namespace SchoolManagementSystem.Controllers
                             _db.Books.Update(book);
                         }
 
-                        // Remove the issued book record
                         var issuedBookToRemove = allExistingBooks.FirstOrDefault(b => b.BookId == bookId);
                         if (issuedBookToRemove != null)
                         {
@@ -442,7 +431,6 @@ namespace SchoolManagementSystem.Controllers
                         }
                     }
 
-                    // 2. Take copies of NEW books being added
                     foreach (var bookId in bookIdsToAdd)
                     {
                         var book = await _db.Books.FindAsync(bookId);
@@ -452,7 +440,6 @@ namespace SchoolManagementSystem.Controllers
                             return View(firstBook);
                         }
 
-                        // Create NEW issued book record
                         var newIssuedBook = new IssuedBook
                         {
                             BookId = bookId,
@@ -470,12 +457,10 @@ namespace SchoolManagementSystem.Controllers
 
                         _db.IssuedBooks.Add(newIssuedBook);
 
-                        // Decrease available copies
                         book.AvailableCopies--;
                         _db.Books.Update(book);
                     }
 
-                    // 3. Update user info for existing books being kept
                     foreach (var bookId in bookIdsToKeep)
                     {
                         var existingBook = allExistingBooks.FirstOrDefault(b => b.BookId == bookId);
@@ -669,11 +654,11 @@ namespace SchoolManagementSystem.Controllers
 
         public async Task<IActionResult> ReturnedBooks()
         {
-            // Show only RETURNED books
+          
             var returnedBooks = await _db.IssuedBooks
                 .Include(i => i.Book)
                 .Include(i => i.AppUser)
-                .Where(i => i.ReturnDate != null) // ONLY SHOW RETURNED
+                .Where(i => i.ReturnDate != null) 
                 .OrderByDescending(i => i.ReturnDate)
                 .ToListAsync();
 
