@@ -310,7 +310,7 @@ namespace SchoolManagementSystem.Controllers
 
             if (operation == "add")
             {
-                currentBookIds.Add(0); // Add empty selection
+                currentBookIds.Add(0); 
                 ViewBag.SelectedBookIds = currentBookIds;
                 ViewBag.BookCount = bookCount + 1;
                 return View(firstBook);
@@ -450,7 +450,6 @@ namespace SchoolManagementSystem.Controllers
                             Section = UserType == "Student" ? Section : "",
                             RollNumber = UserType == "Student" ? RollNumber : null,
                             IssueDate = DateOnly.FromDateTime(DateTime.Now),
-                            //  ExpectedReturnDate = DateTime.Now.AddDays(14),
                             Fine = 0,
                             ReturnDate = null
                         };
@@ -521,7 +520,7 @@ namespace SchoolManagementSystem.Controllers
                 if (DateOnly.FromDateTime(DateTime.Now) > dueDate)
                 {
                     var daysLate = (DateOnly.FromDateTime(DateTime.Now).DayNumber - dueDate.DayNumber);
-                    issuedBook.Fine = daysLate * 10; // 10 per day
+                    issuedBook.Fine = daysLate * 10; // 10 per day   ,,later i will do every 5 days after 
                 }
 
             }

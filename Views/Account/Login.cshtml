@@ -1,28 +1,7 @@
 ﻿@model SchoolManagementSystem.ViewModels.LoginModel
- 
-
-
-@* <form method="post">
-    <div asp-validation-summary="All"></div>
-
-    <div>
-        <label asp-for="UserName" class="form-label"></label>
-        <input  asp-for="UserName" class="form-control"/>
-        <span asp-validation-for="UserName" class="text-danger"></span>
-    </div>
-    <div>
-        <label asp-for="Password" class="form-label"></label>
-        <input asp-for="Password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div>
-        <label asp-for="RememberMe" class="form-label"></label>
-        <input asp-for="RememberMe" class="form-check" />
-        <span asp-validation-for="RememberMe" class="text-danger"></span>
-    </div>
-    <button class="btn btn-success">Login</button>
-    <a asp-action="Register" class="btn btn-info" asp-route-ReturnUrl="@Model.ReturnUrl">New?</a>
-</form> *@
+@{
+    bool showStudentFields = Model?.UserType == "Student";
+}
 
 <section class="login-section">
     <div class="container">
@@ -37,10 +16,36 @@
                             <div asp-validation-summary="All"></div>
                         </div>
 
+                        <div class="form-group mb-3">
+                            <label asp-for="UserType"></label>
+                            <select asp-for="UserType" class="form-control" required>
+                                <option value="">Select User Type</option>
+                                <option value="Admin">Admin</option>
+                                <option value="Student">Student</option>
+                                <option value="Teacher">Teacher</option>
+                            </select>
+                            <span asp-validation-for="UserType" class="text-danger"></span>
+                        </div>
+
+                        <!-- Student fields - hidden by default unless UserType is Student -->
+                        <div id="studentFields" style="display: @(showStudentFields ? "block" : "none");">
+                            <div class="form-group mb-3">
+                                <label asp-for="Class"></label>
+                                <input asp-for="Class" class="form-control" />
+                                <span asp-validation-for="Class" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label asp-for="Section"></label>
+                                <input asp-for="Section" class="form-control" />
+                                <span asp-validation-for="Section" class="text-danger"></span>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
-                            <label asp-for="UserName" class="form-label">Username or Email</label>
-                            <input asp-for="UserName" class="form-control" placeholder="Enter your username or email" />
-                            <span asp-validation-for="UserName" class="text-danger"></span>
+                            <label asp-for="UserNameOrEmail" class="form-label">Username or Email</label>
+                            <input asp-for="UserNameOrEmail" class="form-control" placeholder="Enter your username or email" />
+                            <span asp-validation-for="UserNameOrEmail" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
@@ -64,19 +69,38 @@
                             </a>
                         </div>
 
-
-
                         <div class="text-center mt-3">
                             <a href="#" class="text-muted">Forgot your password?</a>
                         </div>
                     </form>
-
-
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<script>
+    // Function to show/hide student fields
+    function toggleStudentFields() {
+        var userTypeSelect = document.getElementById('UserType');
+        var studentFields = document.getElementById('studentFields');
+
+        if (userTypeSelect && studentFields) {
+            studentFields.style.display = userTypeSelect.value === 'Student' ? 'block' : 'none';
+        }
+    }
+
+    // Run when page loads AND when user changes selection
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleStudentFields();
+
+        var userTypeSelect = document.getElementById('UserType');
+        if (userTypeSelect) {
+            userTypeSelect.addEventListener('change', toggleStudentFields);
+        }
+    });
+</script>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial"></partial>
 }
