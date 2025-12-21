@@ -1,198 +1,288 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MadrasahManagement.Models;
+using MadrasahManagement.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SchoolManagementSystem.Models;
-using SchoolManagementSystem.ViewModels;
-using Microsoft.AspNetCore.Http; // Add this
 
-namespace SchoolManagementSystem.Controllers
+namespace MadrasahManagement.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
-        private readonly ILogger<AccountController> _logger;
-        private readonly RoleManager<AppRole> _roleManager; // Add this
+        private readonly SignInManager<AppUser> _signInManager;
+        private readonly RoleManager<AppRole> _roleManager;
 
-        // Updated constructor
+    
         public AccountController(
-            SignInManager<AppUser> signInManager,
             UserManager<AppUser> userManager,
-            ILogger<AccountController> logger,
-            RoleManager<AppRole> roleManager) // Add this parameter
+            SignInManager<AppUser> signInManager,
+            RoleManager<AppRole> roleManager)
         {
-            _signInManager = signInManager;
             _userManager = userManager;
-            _logger = logger;
-            _roleManager = roleManager; // Initialize
+            _signInManager = signInManager;
+            _roleManager = roleManager;
         }
 
-        [AllowAnonymous]
-        public IActionResult Login(string ReturnUrl = "/")
+
+
+		// =======================
+		// Student Register
+		// =======================
+
+		[HttpGet]
+		public IActionResult RegisterStudent()
+		{
+			return View();
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> RegisterStudent(RegisterStudentViewModel model)
+		{
+			if (!ModelState.IsValid) return View(model);
+
+			var user = new AppUser
+			{
+				UserName = model.Email,
+				Email = model.Email,
+				FullName = model.FullName
+			};
+
+			var result = await _userManager.CreateAsync(user, model.Password);
+
+			if (result.Succeeded)
+			{
+				await _userManager.AddToRoleAsync(user, "Student");
+				await _signInManager.SignInAsync(user, false);
+
+				return RedirectToAction("ProfileEdit", "Student");
+			}
+
+			foreach (var err in result.Errors)
+				ModelState.AddModelError("", err.Description);
+
+			return View(model);
+		}
+
+		// =======================
+		// Teacher Register
+		// =======================
+		[HttpGet]
+		public IActionResult RegisterTeacher()
+		{
+			return View();
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> RegisterTeacher(RegisterTeacherViewModel model)
+		{
+			if (!ModelState.IsValid) return View(model);
+
+			var user = new AppUser
+			{
+				UserName = model.Email,
+				Email = model.Email,
+				FullName = model.FullName
+			};
+
+			var result = await _userManager.CreateAsync(user, model.Password);
+
+			if (result.Succeeded)
+			{
+				await _userManager.AddToRoleAsync(user, "Teacher");
+				await _signInManager.SignInAsync(user, false);
+
+				return RedirectToAction("Index", "TeacherDashboard");
+			}
+
+			return View(model);
+		}
+
+
+		// =======================
+		// Admin Register
+		// =======================
+
+		[HttpGet]
+		[Authorize(Roles = "SuperAdmin")]
+		public IActionResult RegisterAdmin()
+		{
+			return View();
+		}
+
+		[HttpPost]
+		[Authorize(Roles = "SuperAdmin")]
+		public async Task<IActionResult> RegisterAdmin(RegisterAdminViewModel model)
+		{
+			if (!ModelState.IsValid) return View(model);
+
+			var user = new AppUser
+			{
+				UserName = model.Email,
+				Email = model.Email
+			};
+
+			var result = await _userManager.CreateAsync(user, model.Password);
+
+			if (result.Succeeded)
+			{
+				await _userManager.AddToRoleAsync(user, "Admin");
+				return RedirectToAction("Index", "AdminDashboard");
+			}
+
+			return View(model);
+		}
+
+
+
+		// =======================
+		// REGISTER (GET)
+		// =======================
+		[HttpGet]
+        public IActionResult Register()
         {
-            return View(new LoginModel() { ReturnUrl = ReturnUrl });
+            return View(new RegisterModel());
         }
 
-        [AllowAnonymous]
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                AppUser? user = null;
 
-                if (model.UserNameOrEmail.Contains("@"))
-                {
-                    user = await _userManager.FindByEmailAsync(model.UserNameOrEmail);
-                }
-
-                if (user == null)
-                {
-                    user = await _userManager.FindByNameAsync(model.UserNameOrEmail);
-                }
-
-                if (user == null)
-                {
-                    ModelState.AddModelError("UserNameOrEmail", "Invalid username or email");
-                    return View(model);
-                }
-
-                // Check UserType
-                if (string.IsNullOrEmpty(user.UserType) ||
-                    !string.Equals(user.UserType, model.UserType, StringComparison.OrdinalIgnoreCase))
-                {
-                    ModelState.AddModelError("UserType",
-                        $"This account is registered as {user.UserType ?? "Unknown"}, not {model.UserType}. Please select correct user type.");
-                    return View(model);
-                }
-
-                // Student validation
-                if (model.UserType.Equals("Student", StringComparison.OrdinalIgnoreCase))
-                {
-                    bool hasStudentErrors = false;
-
-                    if (string.IsNullOrEmpty(model.Class))
-                    {
-                        ModelState.AddModelError("Class", "Class is required for students.");
-                        hasStudentErrors = true;
-                    }
-
-                    if (string.IsNullOrEmpty(model.Section))
-                    {
-                        ModelState.AddModelError("Section", "Section is required for students.");
-                        hasStudentErrors = true;
-                    }
-
-                    if (hasStudentErrors)
-                        return View(model);
-                }
-
-                // Attempt login
-                var signResult = await _signInManager.PasswordSignInAsync(
-                    user.UserName,
-                    model.Password,
-                    model.RememberMe,
-                    false);
-
-                if (signResult.Succeeded)
-                {
-                    _logger.LogInformation($"{user.UserName} ({user.UserType}) logged in at {DateTime.Now}");
-
-                    // Store in session
-                    HttpContext.Session.SetString("UserType", user.UserType);
-                    HttpContext.Session.SetString("UserId", user.Id.ToString());
-
-                    if (user.UserType == "Student")
-                    {
-                        HttpContext.Session.SetString("Class", user.Class ?? "");
-                        HttpContext.Session.SetString("Section", user.Section ?? "");
-                    }
-
-                    return RedirectPermanent(model.ReturnUrl);
-                }
-                else
-                {
-                    ModelState.AddModelError("Password", "Invalid credentials");
-                    return View(model);
-                }
-            }
-
-            return View(model);
-        }
-
-        [AllowAnonymous]
-        public IActionResult Register(string ReturnUrl = "/")
-        {
-            return View(new RegisterModel() { ReturnUrl = ReturnUrl });
-        }
-
-        [AllowAnonymous]
+        // =======================
+        // REGISTER (POST)
+        // =======================
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = new AppUser
             {
-                // Create user
-                var user = new AppUser
-                {
-                    Id = Guid.NewGuid(),
-                    UserName = model.Email,
-                    Email = model.Email,
-                    UserType = model.UserType,
-                    FullName = model.FullName,
-                    PhoneNumber = model.PhoneNumber
-                };
+                UserName = model.UserName,
+                Email = model.UserName
+            };
 
-                // Set student fields if applicable
-                if (model.UserType == "Student")
-                {
-                    if (string.IsNullOrEmpty(model.Class) || string.IsNullOrEmpty(model.Section))
-                    {
-                        ModelState.AddModelError("", "Class and Section are required for students.");
-                        return View(model);
-                    }
+            var result = await _userManager.CreateAsync(user, model.Password);
 
-                    user.Class = model.Class;
-                    user.Section = model.Section;
-                    user.RollNumber = model.RollNumber;
+            if (result.Succeeded)
+            {
+                // Ensure Student role exists
+                if (!await _roleManager.RoleExistsAsync("Student"))
+                {
+                    await _roleManager.CreateAsync(new AppRole("Student"));
                 }
 
-                var result = await _userManager.CreateAsync(user, model.Password);
+                // Default Role Assign
+                await _userManager.AddToRoleAsync(user, "Student");
 
-                if (result.Succeeded)
-                {
-                  
-                    if (!await _roleManager.RoleExistsAsync(model.UserType))
-                    {
-                        await _roleManager.CreateAsync(new AppRole { Name = model.UserType });
-                    }
+                // Auto Login
+                await _signInManager.SignInAsync(user, isPersistent: false);
 
-                   
-                    await _userManager.AddToRoleAsync(user, model.UserType);
-
-                    _logger.LogInformation($"New {model.UserType} registered: {model.Email}");
-
-                    TempData["SuccessMessage"] = $"Registration successful! Please login with your credentials.";
-                    return RedirectToAction("Login", new { ReturnUrl = model.ReturnUrl });
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                return await RedirectUserByRole(user);
             }
+
+            // Show errors
+            foreach (var error in result.Errors)
+                ModelState.AddModelError("", error.Description);
 
             return View(model);
         }
 
+
+        // =======================
+        // LOGIN (GET)
+        // =======================
         [HttpGet]
-        [Authorize]
+        public IActionResult Login()
+        {
+            return View(new LoginModel());
+        }
+
+        // =======================
+        // LOGIN (POST)
+        // =======================
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var result = await _signInManager.PasswordSignInAsync(
+                model.UserName,
+                model.Password,
+                false,
+                false
+            );
+
+            if (result.Succeeded)
+            {
+                var user = await _userManager.FindByEmailAsync(model.UserName);
+                return await RedirectUserByRole(user);
+            }
+
+            ModelState.AddModelError("", "Invalid Login Attempt");
+            return View(model);
+        }
+
+        // =======================
+        // ROLE-BASED REDIRECTION
+        // =======================
+        private async Task<IActionResult> RedirectUserByRole(AppUser user)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+
+            if (roles.Contains("Admin"))
+                return RedirectToAction("Index", "AdminDashboard");
+
+            if (roles.Contains("Teacher"))
+                return RedirectToAction("Index", "TeacherDashboard");
+
+            if (roles.Contains("Student"))
+                return RedirectToAction("Index", "StudentDashboard");
+
+            // Default fallback
+            return RedirectToAction("Index", "Home");
+        }
+
+        // =======================
+        // LOGOUT
+        // =======================
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            _logger.LogInformation($"{HttpContext.User.Identity.Name} logged out at {DateTime.Now}");
-
-            return Redirect("Login");
+            return RedirectToAction("Login");
         }
+
+        //ForgotPassword
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                // ইউজার না থাকলেও success দেখাও (security best practice)
+                return RedirectToAction("ForgotPasswordConfirmation");
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetLink = Url.Action("ResetPassword", "Account",
+                new { email = user.Email, token = token }, Request.Scheme);
+
+            // এখানে email service দিয়ে resetLink পাঠাবে
+            Console.WriteLine(resetLink);
+
+            return RedirectToAction("ForgotPasswordConfirmation");
+        }
+
     }
 }

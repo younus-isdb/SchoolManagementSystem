@@ -1,4 +1,4 @@
-﻿@model SchoolManagementSystem.ViewModels.RegisterModel
+﻿@model MadrasahManagement.ViewModels.RegisterModel
  
 <section class="login-section">
     <div class="container">
@@ -8,80 +8,37 @@
                     
                     <p class="text-center mb-4">Sign in to access your Info</p>
 
-                    <form asp-action="Register" method="post">
+                    <form method="post">
+                        <div>
+                            <label>Select Role</label>
+                            <select asp-for="Role" class="form-control">
+                                <option value="Student">Student</option>
+                                <option value="Teacher">Teacher</option>
+                            </select>
+                            <span asp-validation-for="Role" class="text-danger"></span>
+                        </div>
+
                         <div class="validation-summary">
                             <div asp-validation-summary="All"></div>
                         </div>
 
-                        <div class="form-group">
-                            <label asp-for="UserType"></label>
-                            <select asp-for="UserType" class="form-control" id="userTypeSelect">
-                                <option value="">Select User Type</option>
-                                <option value="Admin">Admin</option>
-                                <option value="Student">Student</option>
-                                <option value="Teacher">Teacher</option>
-                                @* <option value="Librarian">Librarian</option> *@
-                            </select>
-                            <span asp-validation-for="UserType" class="text-danger"></span>
+                        <div>
+                            <label asp-for="UserName" class="form-label"></label>
+                            <input asp-for="UserName" class="form-control" />
+                            <span asp-validation-for="UserName" class="text-danger"></span>
                         </div>
 
-                        <div class="form-group">
-                            <label asp-for="Email"></label>
-                            <input asp-for="Email" class="form-control" />
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group">
-                            <label asp-for="FullName"></label>
-                            <input asp-for="FullName" class="form-control" />
-                            <span asp-validation-for="FullName" class="text-danger"></span>
-                        </div>
-
-                        
-
-                        <div class="form-group">
-                            <label asp-for="PhoneNumber"></label>
-                            <input asp-for="PhoneNumber" class="form-control" />
-                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                        </div>
-
-                       
-
-                        <!-- Student-specific fields (hidden by default) -->
-                        <div id="studentFields" style="display: none;">
-                            <div class="form-group">
-                                <label asp-for="Class"></label>
-                                <input asp-for="Class" class="form-control" />
-                                <span asp-validation-for="Class" class="text-danger"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="Section"></label>
-                                <input asp-for="Section" class="form-control" />
-                                <span asp-validation-for="Section" class="text-danger"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label asp-for="RollNumber"></label>
-                                <input asp-for="RollNumber" class="form-control" type="number" />
-                                <span asp-validation-for="RollNumber" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <!-- Password fields -->
-                        <div class="form-group">
-                            <label asp-for="Password"></label>
-                            <input asp-for="Password" class="form-control" type="password" />
+                        <div>
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" class="form-control" />
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
 
-                        <div class="form-group">
-                            <label asp-for="ConfirmPassword"></label>
-                            <input asp-for="ConfirmPassword" class="form-control" type="password" />
+                        <div>
+                            <label asp-for="ConfirmPassword" class="form-label"></label>
+                            <input asp-for="ConfirmPassword" class="form-control" />
                             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                         </div>
-
-                       
                         <br />
                         <div class="button-group">
                             <button class="btn btn-register btn-warning">Register</button>
@@ -105,17 +62,25 @@
     <partial name="_ValidationScriptsPartial"></partial>
 }
 
-<script>
-    
-    document.getElementById('userTypeSelect').addEventListener('change', function() {
-        var studentFields = document.getElementById('studentFields');
-        studentFields.style.display = this.value === 'Student' ? 'block' : 'none';
 
-       
-        if (this.value !== 'Student') {
-            document.getElementById('Class').value = '';
-            document.getElementById('Section').value = '';
-            document.getElementById('RollNumber').value = '';
-        }
-    });
-</script>
+@* <form method="post">
+    <div asp-validation-summary="All"></div>
+
+    <div>
+        <label asp-for="UserName" class="form-label"></label>
+        <input  asp-for="UserName" class="form-control"/>
+        <span asp-validation-for="UserName" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Password" class="form-label"></label>
+        <input asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="ConfirmPassword" class="form-label"></label>
+        <input asp-for="ConfirmPassword" class="form-control" />
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+    <button class="btn btn-success">Register</button>
+    <a asp-action="Login" class="btn btn-info" asp-route-ReturnUrl="@Model.ReturnUrl">Login?</a>
+</form> *@
