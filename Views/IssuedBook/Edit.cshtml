@@ -8,8 +8,8 @@
 }
 
 <div class="container">
-    <h1>Edit Issued Books</h1>
-
+    <h1 class="text-center fw-bold" style="color:green" >Edit Issued Books</h1>
+    <br />
     <!-- Display Model Errors -->
     @if (!ViewData.ModelState.IsValid)
     {
@@ -36,8 +36,8 @@
 
         <!-- User Information -->
         <div class="card mb-3">
-            <div class="card-header">
-                <h5 class="mb-0">User Information</h5>
+            <div class="card-header ">
+                <h5 class="mb-0 fw-bold " style="color:green">User Information</h5>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -146,7 +146,7 @@
      
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Selected Books (@bookCount)</h5>
+                <h5 class="mb-0 fw-bold " style="color:green">Selected Books (@bookCount)</h5>
                 <button type="submit" name="operation" value="add" class="btn btn-success btn-sm">
                     + Add Book
                 </button>
@@ -182,7 +182,7 @@
                             }
                         </div>
                         <div class="col-md-2">
-                            @if (i > 0)
+                            @if (i >= 0)
                             {
                                 <button type="submit" name="operation" value="delete-@i" class="btn btn-danger btn-sm mt-3">
                                     ✕ Remove
@@ -196,7 +196,7 @@
 
         <!-- Action Buttons -->
         <div class="form-group mt-4">
-            <button type="submit" name="operation" value="submit" class="btn btn-primary ">
+            <button type="submit" name="operation" value="submit" class="btn btn-success ">
                 💾 Save Changes
             </button>
             <a asp-action="Index" class="btn btn-secondary ">← Back to List</a>

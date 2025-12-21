@@ -15,9 +15,9 @@
     </div>
 }
 <div class="container">
-    <h1>Issue Books</h1>
+    <h1 class="text-center fw-bold" style="color:green">Issue Books</h1>
     <div class="mb-3">
-        <a asp-controller="Book" asp-action="index" class="btn btn-primary">View All Book list</a>
+        <a asp-controller="Book" asp-action="index" class="btn btn-success">View All Book list</a>
 
     </div>
     <form asp-action="Create" method="post">
@@ -26,13 +26,13 @@
         <!-- User Information Section -->
         <div class="card mb-3">
             <div class="card-header">
-                <h5 class="mb-0">User Information</h5>
+                <h5 class="mb-0 fw-bold " style="color:green">User Information</h5>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="control-label">Username</label>
+                            <label class="control-label">Username *</label>
                             <input type="text" name="UserSearch" value="@ViewBag.UserSearch" class="form-control"
                                    placeholder="Enter username..." required />
                             <small class="form-text text-muted">Enter the exact username of the student or teacher</small>
@@ -40,7 +40,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="control-label">User Type</label>
+                            <label class="control-label">User Type *</label>
                             <select name="UserType" class="form-control" required>
                                 <option value="">-- Select Type --</option>
                                 <option value="Student" selected="@(ViewBag.UserType == "Student")">Student</option>
@@ -50,7 +50,7 @@
                         </div>
                     </div>
                 </div>
-
+                <br />
                 <!-- Student Specific Fields -->
                 @if (ViewBag.UserType == "Student")
                 {
@@ -58,21 +58,21 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label class="control-label">Class</label>
+                                    <label class="control-label fw-bold">Class</label>
                                     <input type="text" name="Class" value="@ViewBag.Class" class="form-control"
                                            placeholder="Enter class..." />
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label class="control-label">Section</label>
+                                    <label class="control-label fw-bold">Section</label>
                                     <input type="text" name="Section" value="@ViewBag.Section" class="form-control"
                                            placeholder="Enter section..." />
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label class="control-label">Roll Number</label>
+                                    <label class="control-label fw-bold">Roll Number</label>
                                     <input type="number" name="RollNumber" value="@ViewBag.RollNumber" class="form-control"
                                            placeholder="Enter roll number..." />
                                 </div>
@@ -80,7 +80,7 @@
                         </div>
                     </div>
                 }
-
+                <br />
                 <!-- Search User Button -->
                 <div class="form-group">
                     <button type="submit" name="operation" value="searchuser" class="btn btn-info">
@@ -90,7 +90,7 @@
                         Click "Verify User" to check if the username exists before issuing books
                     </small>
                 </div>
-
+                <br />
                 @if (ViewBag.UserVerified != null)
                 {
                     <div class="alert @(ViewBag.UserVerified == true ? "alert-success" : "alert-danger")">
@@ -98,12 +98,12 @@
                         {
                             <strong>User Verified:</strong>
                              @ViewBag.UserSearch
-                            // -Ready to issue books
+                            
                         }
                         else
                         {
                             <strong>User Not Found:</strong>
-                            // Please check the username and try again
+                           
                         }
                     </div>
                 }
@@ -117,8 +117,8 @@
         }
 
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Books to Issue</h5>
+            <div class="card-header d-flex justify-content-between ">
+                <h5 class="text-center fw-bold" style="color:green">Books to Issue</h5>
 
                 <button type="submit" name="operation" value="add" class="btn btn-success btn-sm">
                     Add Book
@@ -161,7 +161,7 @@
         <input type="hidden" name="bookCount" value="@bookCount" />
 
         <div class="form-group mt-3">
-            <button type="submit" name="operation" value="submit" class="btn btn-primary">
+            <button type="submit" name="operation" value="submit" class="btn btn-success">
                 Issue Books
             </button>
             <a asp-action="Index" class="btn btn-secondary">Back to List</a>

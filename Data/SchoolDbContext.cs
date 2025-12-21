@@ -27,6 +27,7 @@ namespace SchoolManagementSystem.Models
         public DbSet<Section> Sections { get; set; } = default!;
         public DbSet<Subject> Subjects { get; set; } = default!;
         public DbSet<ClassSubject> ClassSubjects { get; set; } = default!;
+        public DbSet<Examination> Examinations { get; set; } = default!;
         public DbSet<Exam> Exams { get; set; } = default!;
         public DbSet<ExamResult> ExamResults { get; set; } = default!;
         public DbSet<Attendance> Attendances { get; set; } = default!;
