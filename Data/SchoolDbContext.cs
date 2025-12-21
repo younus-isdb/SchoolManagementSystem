@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
 namespace SchoolManagementSystem.Models
 {
-	public class SchoolDbContext : IdentityDbContext<AppUser, AppRole, Guid>
+	public class SchoolDbContext : IdentityDbContext<AppUser, AppRole, string>
 
 	{
 		public SchoolDbContext(DbContextOptions<SchoolDbContext> options) : base(options)
@@ -78,7 +78,7 @@ namespace SchoolManagementSystem.Models
             modelBuilder.ApplyConfiguration(new ExpenseConfiguration());
             modelBuilder.ApplyConfiguration(new BookConfiguration());
             modelBuilder.ApplyConfiguration(new IssuedBookConfiguration());
-            modelBuilder.ApplyConfiguration(new NoticeConfiguration());
+            //modelBuilder.ApplyConfiguration(new NoticeConfiguration());
             modelBuilder.ApplyConfiguration(new HostelConfiguration());
             modelBuilder.ApplyConfiguration(new HostelResidentConfiguration());
             modelBuilder.ApplyConfiguration(new TransportRouteConfiguration());
@@ -382,17 +382,17 @@ namespace SchoolManagementSystem.Models
         }
         }
 
-        public class NoticeConfiguration : IEntityTypeConfiguration<Notice>
-        {
-            public void Configure(EntityTypeBuilder<Notice> builder)
-            {
-                builder.ToTable("Notices");
-                builder.HasKey(n => n.NoticeId);
-                builder.Property(n => n.Title).IsRequired().HasMaxLength(200);
-                builder.Property(n => n.Content).IsRequired().HasMaxLength(4000);
-                builder.HasOne(n => n.AppRole).WithMany().HasForeignKey(n => n.VisibleToRoleId).OnDelete(DeleteBehavior.SetNull);
-            }
-        }
+        //public class NoticeConfiguration : IEntityTypeConfiguration<Notice>
+        //{
+        //    public void Configure(EntityTypeBuilder<Notice> builder)
+        //    {
+        //        builder.ToTable("Notices");
+        //        builder.HasKey(n => n.NoticeId);
+        //        builder.Property(n => n.Title).IsRequired().HasMaxLength(200);
+        //        builder.Property(n => n.Content).IsRequired().HasMaxLength(4000);
+        //        builder.HasOne(n => n.AppRole).WithMany().HasForeignKey(n => n.VisibleToRoleId).OnDelete(DeleteBehavior.SetNull);
+        //    }
+        //}
 
         public class HostelConfiguration : IEntityTypeConfiguration<Hostel>
         {

@@ -1,10 +1,10 @@
-﻿using MadrasahManagement.Models;
-using MadrasahManagement.ViewModels;
+﻿using SchoolManagementSystem.Models;
+using SchoolManagementSystem.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MadrasahManagement.Controllers
+namespace SchoolManagementSystem.Controllers
 {
     public class AccountController : Controller
     {

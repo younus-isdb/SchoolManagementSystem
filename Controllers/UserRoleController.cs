@@ -1,11 +1,11 @@
-﻿using MadrasahManagement.Models;
-using MadrasahManagement.ViewModels;
+﻿using SchoolManagementSystem.Models;
+using SchoolManagementSystem.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace MadrasahManagement.Controllers
+namespace SchoolManagementSystem.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class UserRoleController : Controller
@@ -18,6 +18,7 @@ namespace MadrasahManagement.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
         }
+
 
         // ----------------------------
         // Show all users with roles

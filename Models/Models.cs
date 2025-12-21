@@ -77,7 +77,7 @@ namespace SchoolManagementSystem.Models
         // Account / User Relation
         // -------------------------
         [ForeignKey(nameof(AppUser))]
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public AppUser AppUser { get; set; } = default!;
 
         // -------------------------
@@ -299,7 +299,7 @@ namespace SchoolManagementSystem.Models
         public int TeacherId { get; set; }
 
         [ForeignKey(nameof(AppUser))]
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
 
         [ForeignKey(nameof(Department))]
         public int DepartmentId { get; set; }
@@ -678,7 +678,7 @@ namespace SchoolManagementSystem.Models
 
         [ForeignKey(nameof(AppUser))]
         [Required(ErrorMessage = "Please select a user")]
-        public Guid IssuedTo { get; set; }
+        public string IssuedTo { get; set; }
 
 
         public string UserFullName { get; set; } = default!;
@@ -711,7 +711,7 @@ namespace SchoolManagementSystem.Models
         public string Content { get; set; } = default!;
 
         [ForeignKey(nameof(AppRole))]
-        public Guid? VisibleToRoleId { get; set; } 
+        public string? VisibleToRoleId { get; set; } 
 
         public DateTimeOffset DatePosted { get; set; } = DateTimeOffset.UtcNow;
 
@@ -838,11 +838,11 @@ namespace SchoolManagementSystem.Models
         public int MessageId { get; set; }
 
         [ForeignKey(nameof(Sender))]
-        public Guid SenderId { get; set; }
+        public string SenderId { get; set; }
 
         [ForeignKey(nameof(Receiver))]
 
-		public Guid ReceiverId { get; set; }
+		public string ReceiverId { get; set; }
 
         [Required, MaxLength(2000)]
         public string Content { get; set; } = default!;
@@ -870,7 +870,7 @@ namespace SchoolManagementSystem.Models
         public int Id { get; set; }
 
         [ForeignKey(nameof(AppUser))]
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
 
         public DateTimeOffset LoginTime { get; set; } = DateTimeOffset.UtcNow;
 
@@ -889,7 +889,7 @@ namespace SchoolManagementSystem.Models
         public int Id { get; set; }
 
         [ForeignKey(nameof(AppUser))]
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
 
         [MaxLength(100)]
         public string ActionType { get; set; } = default!;

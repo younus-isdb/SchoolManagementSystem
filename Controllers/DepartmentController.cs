@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.Models;
 
-namespace MadrasahManagement.Controllers
+namespace SchoolManagementSystem.Controllers
 {
     public class DepartmentController : Controller
     {

@@ -1,7 +1,7 @@
-﻿using MadrasahManagement.Models;
+﻿using SchoolManagementSystem.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace MadrasahManagement.Services.Seeders
+namespace SchoolManagementSystem.Services.Seeders
 {
     public static class UserRoleSeeder
     {

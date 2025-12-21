@@ -1,4 +1,4 @@
-﻿namespace MadrasahManagement.Services
+﻿namespace SchoolManagementSystem.Services
 {
     public interface IUploadService
     {

@@ -1,31 +1,28 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace SchoolManagementSystem.ViewModels
 {
     public class RegisterModel
     {
-        [Required]
         [EmailAddress]
-        public string Email { get; set; } = string.Empty;
+        [StringLength(50)]
+        [Required(AllowEmptyStrings = false)]
+        public string UserName { get; set; } = default!;
 
         [Required]
-        [StringLength(100, MinimumLength = 6)]
-        [DataType(DataType.Password)]
-        public string Password { get; set; } = string.Empty;
+        public string Role { get; set; }
 
         [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "Passwords do not match.")]
-        public string ConfirmPassword { get; set; } = string.Empty;
+        [StringLength(50, MinimumLength = 4)]
+        [Required(AllowEmptyStrings = false)]
+        public string Password { get; set; } = default!;
 
-        [Required]
-        public string UserType { get; set; } = string.Empty; 
-        public string? Class { get; set; }
-        public string? Section { get; set; }
-        public int? RollNumber { get; set; }
 
-        public string? FullName { get; set; }
-        public string? PhoneNumber { get; set; }
-
+        [DataType(DataType.Password)]
+        [Compare("Password")]
+        public string ConfirmPassword { get; set; } = default!;
+        
         public string ReturnUrl { get; set; } = "/";
 
 
